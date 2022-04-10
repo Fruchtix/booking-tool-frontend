@@ -1,9 +1,12 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import Image from 'next/image';
-import Samplecomponent from '../components/SampleComponent/Samplecomponent';
+import SignIn from '../components/SignIn/SignIn';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 const Home: NextPage = () => {
+  const { data: session } = useSession();
+
   return (
     <div>
       <Head>
@@ -12,29 +15,14 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Samplecomponent />
+      <h1>Create an account to get startet</h1>
+      <SignIn />
 
-      <main className="lockup">
-        <div>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere obcaecati, blanditiis praesentium hic eum
-          magni deleniti qui exercitationem dolore nostrum aut inventore sed at voluptate dicta. Possimus repellat
-          voluptas molestiae deserunt quibusdam corporis necessitatibus deleniti amet sed velit maiores labore maxime
-          neque consequatur veritatis aspernatur, accusantium natus omnis voluptatem fugit quaerat numquam? Earum,
-          libero? Qui perspiciatis eligendi ut tempora corrupti enim perferendis suscipit doloribus? Excepturi qui
-          quisquam non quia sapiente quaerat quo reiciendis explicabo similique ad iusto ratione, veritatis sunt vitae
-          est inventore ab dicta omnis itaque eius recusandae? Maiores, odit optio. Voluptates, dolore eius dolores
-          consequuntur exercitationem quod repellendus aspernatur est officia voluptatem cum, minima perspiciatis, optio
-          recusandae hic reprehenderit pariatur laudantium maxime earum facilis beatae! Necessitatibus sit voluptates
-          accusamus. Autem totam omnis eum. Qui, rerum tenetur? Obcaecati tenetur repellendus voluptatem tempore nisi
-          consequuntur, error porro autem minus necessitatibus dolorum quis itaque, eius nemo assumenda dolores non quas
-          distinctio. Eius debitis saepe magnam amet enim sapiente deleniti iste, blanditiis assumenda architecto optio
-          nisi cumque, quod eum dolores esse, est nihil nobis! Magni ab animi, dolor velit delectus blanditiis sint
-          perferendis eveniet ut officiis. Obcaecati temporibus aspernatur quaerat dolor animi sequi in ratione earum
-          fugiat, fugit perferendis quo optio modi.
-        </div>
-      </main>
-
-      <footer>footer</footer>
+      {session && (
+        <h2>
+          <Link href="/dashboard">Go to the Dashboard</Link>
+        </h2>
+      )}
     </div>
   );
 };

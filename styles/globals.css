@@ -35,3 +35,11 @@ main:focus {
 img {
   max-width: 100%;
 }
+
+.background-customizable {
+  background-color: green;
+}
+
+a {
+  color: var(--link-color);
+}
