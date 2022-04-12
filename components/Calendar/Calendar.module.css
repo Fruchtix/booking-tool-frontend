@@ -1,0 +1,24 @@
+.calendar {
+  margin: var(--space-md);
+}
+
+.header {
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-around;
+  border-bottom: 1px solid var(--dark);
+  background-color: var(--gray);
+}
+
+.row-header {
+  display: flex;
+  flex-grow: 1;
+}
+
+.day-number {
+}
+
+.day-name {
+  flex-grow: 1;
+  text-align: center;
+}

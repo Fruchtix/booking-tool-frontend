@@ -5,13 +5,13 @@
 }
 
 body {
-  color: var(--off-white);
-  background-color: var(--dark);
+  color: var(--dark);
+  background-color: var(--off-white);
   margin: 0;
 }
 
 h1 {
-  color: var(--green);
+  color: var(--dark);
   font-size: var(--font-size-lg);
 }
 
@@ -26,7 +26,7 @@ section {
 }
 
 :focus {
-  outline: 0.15rem dashed var(--off-white);
+  outline: 0.15rem dashed var(--dark);
   outline-offset: 0.25rem;
 }
 main:focus {

@@ -1,0 +1,23 @@
+.control-bar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.left,
+.right {
+  display: flex;
+}
+
+.left > div,
+.right > div {
+  margin: var(--space-md);
+}
+
+.right {
+  align-items: center;
+}
+
+.next-prev-btns {
+  display: flex;
+  gap: var(--space-md);
+}

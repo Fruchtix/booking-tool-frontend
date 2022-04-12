@@ -1,5 +1,6 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Layout from '../components/Layout/Layout';
+import CustomCalender from '../components/Calendar/Calendar';
 
 interface Props {
   message: string;
@@ -8,9 +9,11 @@ interface Props {
 const Calender: NextPage<Props> = props => {
   const { message } = props;
 
+  console.log(message);
+
   return (
     <Layout>
-      <div>Calender {message}</div>
+      <CustomCalender />
     </Layout>
   );
 };
