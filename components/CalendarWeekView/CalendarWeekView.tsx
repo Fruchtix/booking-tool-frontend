@@ -11,6 +11,7 @@ const CalendarWeekView = ({ currentWeekDays }: Props) => {
   return (
     <div className={style['week-view']}>
       <div className={style['header']}>
+        <div className={style['spacer']}></div>
         {currentWeekDays.map(day => {
           const isCurrentDay = day.date() === dayjs().date();
 
@@ -27,16 +28,25 @@ const CalendarWeekView = ({ currentWeekDays }: Props) => {
         })}
       </div>
 
-      <div className={style['main']}>
-        {currentWeekDays.map(day => (
-          <div key={day.format()} className={style['day-column']}>
-            {hours.map((hour, index) => (
-              <div key={index} className={style['slot']}>
-                slot
-              </div>
-            ))}
-          </div>
-        ))}
+      <div className={style['body']}>
+        <div className={style['time-indicator']}>
+          {hours.map((hour, index) => (
+            <div key={index} className={style['unit']}>
+              {index}
+            </div>
+          ))}
+        </div>
+        <div className={style['main']}>
+          {currentWeekDays.map(day => (
+            <div key={day.format()} className={style['day-column']}>
+              {hours.map((hour, index) => (
+                <div key={index} className={style['slot']}>
+                  slot {index}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

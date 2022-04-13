@@ -12,16 +12,17 @@
   background-color: var(--gray);
 }
 
-.row-header {
-  display: flex;
-  flex-grow: 1;
+.header .spacer {
+  width: var(--space-md);
 }
 
-.day-number {
+.row-header {
+  display: flex;
+  flex: 1;
 }
 
 .day-name {
-  flex-grow: 1;
+  flex: 1;
   text-align: center;
 }
 
@@ -33,12 +34,23 @@
   color: var(--primary);
 }
 
+.body {
+  display: flex;
+  overflow-y: scroll;
+}
+
+.time-indicator {
+  width: var(--space-md);
+}
+
+.time-indicator .unit {
+  height: 50px;
+}
+
 .main {
   display: flex;
-  justify-content: space-around;
   background-color: var(--off-white);
-  overflow-y: scroll;
-  border: 1px solid var(--dark);
+  flex: 1;
 }
 
 .day-column {
@@ -47,6 +59,6 @@
 }
 
 .slot {
-  border-bottom: 1px solid var(--gray);
+  border: 1px solid var(--dark);
   height: 50px;
 }
