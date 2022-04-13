@@ -1,24 +1,12 @@
 .calendar {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   margin: var(--space-md);
-}
-
-.header {
-  display: flex;
-  flex-grow: 1;
-  justify-content: space-around;
-  border-bottom: 1px solid var(--dark);
-  background-color: var(--gray);
-}
-
-.row-header {
-  display: flex;
-  flex-grow: 1;
-}
-
-.day-number {
-}
-
-.day-name {
-  flex-grow: 1;
-  text-align: center;
 }

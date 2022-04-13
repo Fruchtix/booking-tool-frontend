@@ -1,0 +1,52 @@
+.week-view {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+}
+
+.header {
+  display: flex;
+  justify-content: space-around;
+  border-bottom: 1px solid var(--dark);
+  background-color: var(--gray);
+}
+
+.row-header {
+  display: flex;
+  flex-grow: 1;
+}
+
+.day-number {
+}
+
+.day-name {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.day-number-current-day {
+  color: var(--primary);
+}
+
+.day-name-current-day {
+  color: var(--primary);
+}
+
+.main {
+  display: flex;
+  justify-content: space-around;
+  background-color: var(--off-white);
+  overflow-y: scroll;
+  border: 1px solid var(--dark);
+}
+
+.day-column {
+  flex: 1;
+  position: relative;
+}
+
+.slot {
+  border-bottom: 1px solid var(--gray);
+  height: 50px;
+}

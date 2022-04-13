@@ -1,6 +1,6 @@
 .sidebar {
   background-color: var(--gray);
-  min-height: 100vh;
+  height: 100vh;
   padding: var(--space-md);
   display: flex;
 }
