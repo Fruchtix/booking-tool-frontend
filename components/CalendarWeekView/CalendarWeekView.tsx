@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import style from './CalendarWeekView.module.css';
 import dayjs, { Dayjs } from 'dayjs';
 
@@ -6,12 +7,29 @@ interface Props {
 }
 
 const CalendarWeekView = ({ currentWeekDays }: Props) => {
-  const hours = new Array(24).fill('hour');
+  const slots = Array.from({ length: 24 }, (x, i) => i);
+  const contentBody = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const contentHeight = contentBody.current?.offsetHeight || 0;
+    const scrollFromTop = contentHeight * 1.125;
+
+    contentBody.current?.scrollTo(0, scrollFromTop);
+  }, []);
+
+  const handleSlotdoubleClick = (e: React.MouseEvent<HTMLElement>) => {
+    if (e.detail !== 2) return;
+
+    // TODO: check if appointment is in that timeslot
+    // yes => open it in modal
+    // no => open modal to create a new meeting
+
+    e.currentTarget.style.background = 'red';
+  };
 
   return (
     <div className={style['week-view']}>
       <div className={style['header']}>
-        <div className={style['spacer']}></div>
         {currentWeekDays.map(day => {
           const isCurrentDay = day.date() === dayjs().date();
 
@@ -28,20 +46,21 @@ const CalendarWeekView = ({ currentWeekDays }: Props) => {
         })}
       </div>
 
-      <div className={style['body']}>
+      <div className={style['body']} ref={contentBody}>
         <div className={style['time-indicator']}>
-          {hours.map((hour, index) => (
-            <div key={index} className={style['unit']}>
-              {index}
+          {slots.map(hour => (
+            <div key={hour} className={style['unit']}>
+              <span>{hour}</span>
             </div>
           ))}
         </div>
         <div className={style['main']}>
           {currentWeekDays.map(day => (
             <div key={day.format()} className={style['day-column']}>
-              {hours.map((hour, index) => (
+              {slots.map((slot, index) => (
                 <div key={index} className={style['slot']}>
-                  slot {index}
+                  <div className={style['first-half']} onClick={handleSlotdoubleClick}></div>
+                  <div className={style['second-half']} onClick={handleSlotdoubleClick}></div>
                 </div>
               ))}
             </div>

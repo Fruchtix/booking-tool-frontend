@@ -9,16 +9,13 @@
   display: flex;
   justify-content: space-around;
   border-bottom: 1px solid var(--dark);
-  background-color: var(--gray);
-}
-
-.header .spacer {
-  width: var(--space-md);
+  margin-left: var(--space-md);
 }
 
 .row-header {
   display: flex;
   flex: 1;
+  position: relative;
 }
 
 .day-name {
@@ -26,8 +23,21 @@
   text-align: center;
 }
 
+.day-number {
+  position: absolute;
+  left: var(--space-sm);
+  display: flex;
+  align-items: center;
+}
+
 .day-number-current-day {
-  color: var(--primary);
+  padding: 2px;
+  background-color: var(--primary);
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  padding: 5px;
+  color: var(--off-white);
 }
 
 .day-name-current-day {
@@ -36,7 +46,9 @@
 
 .body {
   display: flex;
+  flex: 1;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .time-indicator {
@@ -44,7 +56,19 @@
 }
 
 .time-indicator .unit {
-  height: 50px;
+  height: calc(100% / 8);
+  position: relative;
+}
+
+.time-indicator .unit span {
+  position: absolute;
+  transform: translateY(-50%);
+  top: 0;
+  right: 2.5px;
+}
+
+.time-indicator .unit:first-child {
+  visibility: hidden;
 }
 
 .main {
@@ -59,6 +83,20 @@
 }
 
 .slot {
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--dark);
-  height: 50px;
+  height: calc(100% / 8);
+}
+
+.slot .first-half,
+.slot .second-half {
+  flex: 1;
+}
+
+.slot .first-half {
+  border-bottom: 1px solid var(--dark);
+}
+
+.slot .second-half {
 }
