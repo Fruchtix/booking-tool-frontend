@@ -4,13 +4,18 @@ import style from './Calendar.module.css';
 import CalendarWeekView from '../CalendarWeekView/CalendarWeekView';
 import dayjs from 'dayjs';
 import de from 'dayjs/locale/de';
+import Appointment from '../../interfaces/Appointment';
 
 dayjs.locale({
   ...de,
   weekStart: 1,
 });
 
-const Calender = () => {
+interface Props {
+  appointments: Array<Appointment>;
+}
+
+const Calender = ({ appointments }: Props) => {
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [currentWeekDays, setCurrentWeekDays]: any[] = useState([]);
 
@@ -20,6 +25,11 @@ const Calender = () => {
 
     setCurrentWeekDays(daysInWeek);
   }, [currentDate]);
+
+  useEffect(() => {
+    // TODO: fill calender with appointments
+    // maybe make hook out of appointments => useAppointments()
+  }, []);
 
   const handlePrevClick = () => {
     setCurrentDate(currentDate => currentDate.subtract(7, 'day'));
