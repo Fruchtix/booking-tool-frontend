@@ -5,6 +5,9 @@
 
   --primary: rgb(28, 113, 224);
 
+  --available: rgb(108, 205, 95);
+  --blocked: rgb(180, 21, 143);
+
   --link-color: #000;
 
   --space-sm: 0.5rem;

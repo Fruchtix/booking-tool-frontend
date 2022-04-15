@@ -16,9 +16,10 @@ dayjs.locale({
 
 interface Props {
   appointments: Array<Appointment>;
+  timeslots: Array<Timeslot>;
 }
 
-const Calender = ({ appointments }: Props) => {
+const Calender = ({ appointments, timeslots }: Props) => {
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [currentWeekDays, setCurrentWeekDays] = useState<any[]>([]);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
@@ -65,6 +66,7 @@ const Calender = ({ appointments }: Props) => {
         <CalendarWeekView
           currentWeekDays={currentWeekDays}
           appointments={appointments}
+          timeslots={timeslots}
           openAppointmentDetails={openAppointmentDetails}
           openTimeslotDetails={openTimeslotDetails}
         />

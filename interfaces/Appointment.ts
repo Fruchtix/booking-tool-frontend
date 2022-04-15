@@ -3,6 +3,6 @@ export default interface Appointment {
   start: string;
   end: string;
   tattooerId: string;
-  heading?: string;
-  describtion?: string;
+  heading: string;
+  describtion: string;
 }

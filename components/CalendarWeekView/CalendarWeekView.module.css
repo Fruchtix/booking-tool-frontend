@@ -102,18 +102,3 @@
 
 .slot .second-half {
 }
-
-.appointments {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-}
-
-.appointment {
-  width: calc(100% / 7);
-  background-color: red;
-  position: absolute;
-}

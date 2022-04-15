@@ -3,16 +3,25 @@ import style from './CalendarWeekView.module.css';
 import dayjs, { Dayjs } from 'dayjs';
 import Appointment from '../../interfaces/Appointment';
 import Timeslot from '../../interfaces/Timeslot';
+import { v4 as uuidv4 } from 'uuid';
+import CalendarEntries from '../CalendarEntries/CalendarEntries';
 
 interface Props {
   currentWeekDays: Array<Dayjs>;
   appointments: Array<Appointment>;
+  timeslots: Array<Timeslot>;
   openAppointmentDetails: (appointment: Appointment) => void;
   openTimeslotDetails: (timeslot: Timeslot) => void;
 }
 
-const CalendarWeekView = ({ currentWeekDays, appointments, openAppointmentDetails, openTimeslotDetails }: Props) => {
-  const [appointmentsVisible, setAppointmentsVisible] = useState(false);
+const CalendarWeekView = ({
+  currentWeekDays,
+  appointments,
+  timeslots,
+  openAppointmentDetails,
+  openTimeslotDetails,
+}: Props) => {
+  const [isScrolledIntoView, setIsScrolledIntoView] = useState(false);
   const slots = Array.from({ length: 24 }, (x, i) => i);
   const contentBody = useRef<HTMLDivElement>(null);
 
@@ -21,22 +30,24 @@ const CalendarWeekView = ({ currentWeekDays, appointments, openAppointmentDetail
     const scrollFromTop = contentHeight * 1.125;
 
     contentBody.current?.scrollTo(0, scrollFromTop);
-    setAppointmentsVisible(true);
+    setIsScrolledIntoView(true);
   }, []);
 
   const handleSlotdoubleClick = (e: React.MouseEvent<HTMLElement>) => {
     if (e.detail !== 2) return;
 
+    const { day, hour, minute } = e.currentTarget.dataset;
+
+    const timeslotStart = dayjs(day).hour(Number(hour)).minute(Number(minute)).format();
+    const timeslotEnd = dayjs(timeslotStart).add(15, 'minute').format();
+
     const newTimeslot: Timeslot = {
-      id: '1234',
-      tattooerId: '11',
-      start: '1',
-      end: '1',
+      id: uuidv4(),
+      tattooerId: 'todo',
+      start: timeslotStart,
+      end: timeslotEnd,
     };
 
-    // TODO: get start date of clicked timeslot
-    // TODO: checkout uuid for timeslot id
-    // TODO: render timeslots in the same way as appointments
     // TODO: enhance timeslot modal to configure start, end, repeating
     // TODO: save timeslot to DB => trigger aws lambda after creation
     // TODO: write aws lambda to save timeslot in DB
@@ -47,10 +58,16 @@ const CalendarWeekView = ({ currentWeekDays, appointments, openAppointmentDetail
     openTimeslotDetails(newTimeslot);
   };
 
-  const handleAppointmentDoubleClick = (e: React.MouseEvent<HTMLElement>, appointment: Appointment) => {
+  const handleAppointmentDoubleClick = (e: React.MouseEvent<HTMLElement>, appointment: Appointment | Timeslot) => {
     if (e.detail !== 2) return;
 
-    openAppointmentDetails(appointment);
+    openAppointmentDetails(appointment as Appointment);
+  };
+
+  const handleTimeslotDoubleClick = (e: React.MouseEvent<HTMLElement>, timeslot: Appointment | Timeslot) => {
+    if (e.detail !== 2) return;
+
+    openTimeslotDetails(timeslot as Timeslot);
   };
 
   return (
@@ -85,39 +102,33 @@ const CalendarWeekView = ({ currentWeekDays, appointments, openAppointmentDetail
             <div key={day.format()} className={style['day-column']}>
               {slots.map((slot, index) => (
                 <div key={index} className={style['slot']}>
-                  <div className={style['first-half']} onClick={handleSlotdoubleClick}></div>
-                  <div className={style['second-half']} onClick={handleSlotdoubleClick}></div>
+                  <div
+                    className={style['first-half']}
+                    data-hour={index}
+                    data-minute={0}
+                    data-day={day.format()}
+                    onClick={handleSlotdoubleClick}
+                  ></div>
+                  <div
+                    className={style['second-half']}
+                    data-hour={index}
+                    data-minute={30}
+                    data-day={day.format()}
+                    onClick={handleSlotdoubleClick}
+                  ></div>
                 </div>
               ))}
             </div>
           ))}
-          {appointmentsVisible && (
-            <div className={style['appointments']}>
-              {appointments.map(appointment => {
-                const startDate = dayjs(appointment.start);
-                const endDate = dayjs(appointment.end);
-                const column = startDate.day();
-                const startHour = startDate.hour() + startDate.minute() / 60;
-                const endHour = endDate.hour() + endDate.minute() / 60;
-
-                return (
-                  <div
-                    key={appointment.id}
-                    className={`${style['appointment']} pointer`}
-                    data-column={column}
-                    data-start={startHour}
-                    style={{
-                      top: `calc(100% / 8 * ${startHour})`,
-                      transform: `translateX(${column - 1}00%)`,
-                      height: `calc(100% / 8 * ${endHour - startHour})`,
-                    }}
-                    onClick={e => handleAppointmentDoubleClick(e, appointment)}
-                  >
-                    {appointment.heading}
-                  </div>
-                );
-              })}
-            </div>
+          {isScrolledIntoView && (
+            <>
+              <CalendarEntries
+                entries={appointments}
+                handleDoubleClick={handleAppointmentDoubleClick}
+                isTimeslot={false}
+              />
+              <CalendarEntries entries={timeslots} handleDoubleClick={handleTimeslotDoubleClick} isTimeslot={true} />
+            </>
           )}
         </div>
       </div>

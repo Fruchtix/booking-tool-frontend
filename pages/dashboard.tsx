@@ -17,7 +17,7 @@ const Dashboard: NextPage<Props> = props => {
 
 export const getServerSideProps: GetServerSideProps = async context => {
   console.log('context: ');
-  console.log(context);
+  // console.log(context);
 
   // TODO: 1. Get Infos for the dashboard here - all the data from DB (calender dates)
 

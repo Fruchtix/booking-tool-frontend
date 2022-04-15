@@ -3,17 +3,19 @@ import Layout from '../components/Layout/Layout';
 import CustomCalender from '../components/Calendar/Calendar';
 import Appointment from '../interfaces/Appointment';
 import dayjs from 'dayjs';
+import Timeslot from '../interfaces/Timeslot';
 
 interface Props {
   appointments: Array<Appointment>;
+  timeslots: Array<Timeslot>;
 }
 
 const Calender: NextPage<Props> = props => {
-  const { appointments } = props;
+  const { appointments, timeslots } = props;
 
   return (
     <Layout>
-      <CustomCalender appointments={appointments} />
+      <CustomCalender appointments={appointments} timeslots={timeslots} />
     </Layout>
   );
 };
@@ -45,6 +47,20 @@ export const getServerSideProps: GetServerSideProps = async context => {
           tattooerId: '1234',
           heading: 'Tattoo Kerstin - kleiner Affe',
           describtion: 'lorem ipsum description - images will also be displayed here',
+        },
+      ],
+      timeslots: [
+        {
+          id: '1',
+          start: dayjs().hour(8).format(),
+          end: dayjs().hour(10).format(),
+          tattooerId: '1234',
+        },
+        {
+          id: '2',
+          start: dayjs().subtract(2, 'day').hour(7).format(),
+          end: dayjs().subtract(2, 'day').hour(9).format(),
+          tattooerId: '1234',
         },
       ],
     },
