@@ -5,6 +5,9 @@ import CalendarWeekView from '../CalendarWeekView/CalendarWeekView';
 import dayjs from 'dayjs';
 import de from 'dayjs/locale/de';
 import Appointment from '../../interfaces/Appointment';
+import CalendarAppointmentModal from '../CalendarAppointmentModal/CalendarAppointmentModal';
+import CalendarTimeslotModal from '../CalendarTimeslotModal/CalendarTimeslotModal';
+import Timeslot from '../../interfaces/Timeslot';
 
 dayjs.locale({
   ...de,
@@ -17,7 +20,9 @@ interface Props {
 
 const Calender = ({ appointments }: Props) => {
   const [currentDate, setCurrentDate] = useState(dayjs());
-  const [currentWeekDays, setCurrentWeekDays]: any[] = useState([]);
+  const [currentWeekDays, setCurrentWeekDays] = useState<any[]>([]);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [selectedTimeslot, setSelectedTimeslot] = useState<Timeslot | null>(null);
 
   useEffect(() => {
     const currentWeekStart = currentDate.startOf('week');
@@ -25,11 +30,6 @@ const Calender = ({ appointments }: Props) => {
 
     setCurrentWeekDays(daysInWeek);
   }, [currentDate]);
-
-  useEffect(() => {
-    // TODO: fill calender with appointments
-    // maybe make hook out of appointments => useAppointments()
-  }, []);
 
   const handlePrevClick = () => {
     setCurrentDate(currentDate => currentDate.subtract(7, 'day'));
@@ -43,6 +43,14 @@ const Calender = ({ appointments }: Props) => {
     setCurrentDate(dayjs());
   };
 
+  const openAppointmentDetails = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+  };
+
+  const openTimeslotDetails = (timeslot: Timeslot) => {
+    setSelectedTimeslot(timeslot);
+  };
+
   return (
     <div className={style['calendar']}>
       <div className={style['container']}>
@@ -52,8 +60,14 @@ const Calender = ({ appointments }: Props) => {
           onNextClick={handleNextClick}
           onTodayClick={handleTodayClick}
         />
-
-        <CalendarWeekView currentWeekDays={currentWeekDays} />
+        <CalendarAppointmentModal appointment={selectedAppointment} closeModal={() => setSelectedAppointment(null)} />
+        <CalendarTimeslotModal timeslot={selectedTimeslot} closeModal={() => setSelectedTimeslot(null)} />
+        <CalendarWeekView
+          currentWeekDays={currentWeekDays}
+          appointments={appointments}
+          openAppointmentDetails={openAppointmentDetails}
+          openTimeslotDetails={openTimeslotDetails}
+        />
       </div>
     </div>
   );

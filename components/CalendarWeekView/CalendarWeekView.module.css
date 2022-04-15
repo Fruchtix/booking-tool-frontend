@@ -28,6 +28,7 @@
   left: var(--space-sm);
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .day-number-current-day {
@@ -73,6 +74,7 @@
 
 .main {
   display: flex;
+  position: relative;
   background-color: var(--off-white);
   flex: 1;
 }
@@ -99,4 +101,19 @@
 }
 
 .slot .second-half {
+}
+
+.appointments {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+.appointment {
+  width: calc(100% / 7);
+  background-color: red;
+  position: absolute;
 }
