@@ -39,7 +39,7 @@ const CalendarWeekView = ({
     const { day, hour, minute } = e.currentTarget.dataset;
 
     const timeslotStart = dayjs(day).hour(Number(hour)).minute(Number(minute)).format();
-    const timeslotEnd = dayjs(timeslotStart).add(15, 'minute').format();
+    const timeslotEnd = dayjs(timeslotStart).add(30, 'minute').format();
 
     const newTimeslot: Timeslot = {
       id: uuidv4(),
@@ -48,12 +48,7 @@ const CalendarWeekView = ({
       end: timeslotEnd,
     };
 
-    // TODO: enhance timeslot modal to configure start, end, repeating
-    // TODO: save timeslot to DB => trigger aws lambda after creation
-    // TODO: write aws lambda to save timeslot in DB
-    // TODO: get timeslots in getsersideprops
-
-    e.currentTarget.style.background = 'green';
+    timeslots.push(newTimeslot);
 
     openTimeslotDetails(newTimeslot);
   };
