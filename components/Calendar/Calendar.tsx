@@ -14,12 +14,7 @@ dayjs.locale({
   weekStart: 1,
 });
 
-interface Props {
-  appointments: Array<Appointment>;
-  timeslots: Array<Timeslot>;
-}
-
-const Calender = ({ appointments, timeslots }: Props) => {
+const Calender = () => {
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [currentWeekDays, setCurrentWeekDays] = useState<any[]>([]);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
@@ -65,8 +60,6 @@ const Calender = ({ appointments, timeslots }: Props) => {
         <CalendarTimeslotModal timeslot={selectedTimeslot} closeModal={() => setSelectedTimeslot(null)} />
         <CalendarWeekView
           currentWeekDays={currentWeekDays}
-          appointments={appointments}
-          timeslots={timeslots}
           openAppointmentDetails={openAppointmentDetails}
           openTimeslotDetails={openTimeslotDetails}
         />

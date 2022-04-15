@@ -1,6 +1,7 @@
 import style from './CalendarTimeslotModal.module.css';
 import Timeslot from '../../interfaces/Timeslot';
 import dayjs from 'dayjs';
+import { useTimeslots } from '../../context/TimeslotContext';
 
 interface Props {
   timeslot: Timeslot | null;
@@ -8,6 +9,8 @@ interface Props {
 }
 
 const CalendarTimeslotModal = ({ timeslot, closeModal }: Props) => {
+  const { timeslots, resetTimeslots } = useTimeslots();
+
   const handleOutsideClick = (e: React.MouseEvent<HTMLElement>) => {
     if (e.target === e.currentTarget) closeModal();
   };

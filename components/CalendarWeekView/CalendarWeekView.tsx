@@ -5,23 +5,19 @@ import Appointment from '../../interfaces/Appointment';
 import Timeslot from '../../interfaces/Timeslot';
 import { v4 as uuidv4 } from 'uuid';
 import CalendarEntries from '../CalendarEntries/CalendarEntries';
+import { useTimeslots } from '../../context/TimeslotContext';
+import { useAppointments } from '../../context/AppointmentContext';
 
 interface Props {
   currentWeekDays: Array<Dayjs>;
-  appointments: Array<Appointment>;
-  timeslots: Array<Timeslot>;
   openAppointmentDetails: (appointment: Appointment) => void;
   openTimeslotDetails: (timeslot: Timeslot) => void;
 }
 
-const CalendarWeekView = ({
-  currentWeekDays,
-  appointments,
-  timeslots,
-  openAppointmentDetails,
-  openTimeslotDetails,
-}: Props) => {
+const CalendarWeekView = ({ currentWeekDays, openAppointmentDetails, openTimeslotDetails }: Props) => {
   const [isScrolledIntoView, setIsScrolledIntoView] = useState(false);
+  const { timeslots } = useTimeslots();
+  const { appointments } = useAppointments();
   const slots = Array.from({ length: 24 }, (x, i) => i);
   const contentBody = useRef<HTMLDivElement>(null);
 
@@ -48,6 +44,7 @@ const CalendarWeekView = ({
       end: timeslotEnd,
     };
 
+    // TODO: implement push function in on timeslot provider
     timeslots.push(newTimeslot);
 
     openTimeslotDetails(newTimeslot);

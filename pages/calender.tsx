@@ -4,6 +4,8 @@ import CustomCalender from '../components/Calendar/Calendar';
 import Appointment from '../interfaces/Appointment';
 import dayjs from 'dayjs';
 import Timeslot from '../interfaces/Timeslot';
+import { TimeslotProvider } from '../Provider/TimeslotProvider';
+import { AppointmentProvider } from '../Provider/AppointmentProvider';
 
 interface Props {
   appointments: Array<Appointment>;
@@ -15,7 +17,11 @@ const Calender: NextPage<Props> = props => {
 
   return (
     <Layout>
-      <CustomCalender appointments={appointments} timeslots={timeslots} />
+      <TimeslotProvider timeslots={timeslots}>
+        <AppointmentProvider appointments={appointments}>
+          <CustomCalender />
+        </AppointmentProvider>
+      </TimeslotProvider>
     </Layout>
   );
 };
