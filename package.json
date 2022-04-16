@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "axios": "^0.26.1",
     "dayjs": "^1.11.0",
     "next": "12.1.4",
     "next-auth": "^4.3.1",

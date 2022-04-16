@@ -8,15 +8,28 @@ interface Props {
   entries: Array<Appointment | Timeslot>;
   handleDoubleClick: (e: React.MouseEvent<HTMLElement>, entry: Appointment | Timeslot) => void;
   isTimeslot: boolean;
+  currentWeekDays: dayjs.Dayjs[];
 }
 
-const CalendarEntries = ({ entries, handleDoubleClick, isTimeslot }: Props) => {
+const CalendarEntries = ({ entries, handleDoubleClick, isTimeslot, currentWeekDays }: Props) => {
+  const firstDayOfNextWeek = currentWeekDays[currentWeekDays.length - 1].clone().add(1, 'day');
+  const lastDayOfLastWeek = currentWeekDays[0].clone().subtract(1, 'day');
+
   return (
     <div className={style['entries']}>
       {entries.map(entry => {
         const startDate = dayjs(entry.start);
+
+        const isBefore = startDate.isBefore(firstDayOfNextWeek, 'day');
+        const isAfter = startDate.isAfter(lastDayOfLastWeek, 'day');
+        const entryIsInCurrentWeek = isBefore && isAfter;
+
+        if (!entryIsInCurrentWeek) {
+          return null;
+        }
+
         const endDate = dayjs(entry.end);
-        const column = startDate.day();
+        const column = startDate.day() === 0 ? 7 : startDate.day();
         const startHour = startDate.hour() + startDate.minute() / 60;
         const endHour = endDate.hour() + endDate.minute() / 60;
 
@@ -24,7 +37,7 @@ const CalendarEntries = ({ entries, handleDoubleClick, isTimeslot }: Props) => {
 
         return (
           <div
-            key={entry.id}
+            key={entry.start}
             className={`${style['entry']} pointer ${isTimeslot ? style['timeslot'] : null}`}
             data-column={column}
             data-start={startHour}

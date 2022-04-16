@@ -1,8 +1,9 @@
 export default interface Appointment {
   id: string;
+  tattooerID: string;
+  studioID: string;
   start: string;
   end: string;
-  tattooerId: string;
   heading: string;
   describtion: string;
 }

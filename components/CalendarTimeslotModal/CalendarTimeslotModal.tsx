@@ -9,21 +9,28 @@ interface Props {
 }
 
 const CalendarTimeslotModal = ({ timeslot, closeModal }: Props) => {
-  const { timeslots, resetTimeslots } = useTimeslots();
+  const { timeslots, updateTimeslot } = useTimeslots();
 
   const handleOutsideClick = (e: React.MouseEvent<HTMLElement>) => {
-    if (e.target === e.currentTarget) closeModal();
+    if (e.target !== e.currentTarget) return;
+
+    closeModal();
   };
 
   const update = () => {
     if (!timeslot) return;
 
-    // TODO: enhance timeslot modal to configure start, end, repeating
-    // TODO: save timeslot to DB => trigger aws lambda after creation
-    // TODO: write aws lambda to save timeslot in DB
-    // TODO: get timeslots in getsersideprops
+    // TODO: enhance timeslot modal to configure start, end, repeating, option to delete it
 
     timeslot.end = dayjs(timeslot.start).add(2, 'hour').format();
+  };
+
+  const saveTimeslot = () => {
+    if (!timeslot) return;
+
+    updateTimeslot(timeslot);
+
+    closeModal();
   };
 
   if (!timeslot) return null;
@@ -37,6 +44,9 @@ const CalendarTimeslotModal = ({ timeslot, closeModal }: Props) => {
         <div onClick={closeModal} className={style['close']}>
           x
         </div>
+        <button type="button" onClick={saveTimeslot}>
+          save
+        </button>
       </div>
     </div>
   );

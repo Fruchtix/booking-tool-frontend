@@ -3,12 +3,12 @@ import Timeslot from '../interfaces/Timeslot';
 
 type TimeslotContext = {
   timeslots: Array<Timeslot>;
-  resetTimeslots: () => void;
+  updateTimeslot: (timeslot: Timeslot) => void;
 };
 
 const timeslotContextDefaultValues: TimeslotContext = {
   timeslots: [],
-  resetTimeslots: () => {},
+  updateTimeslot: () => {},
 };
 
 const TimeslotContext = createContext<TimeslotContext>(timeslotContextDefaultValues);

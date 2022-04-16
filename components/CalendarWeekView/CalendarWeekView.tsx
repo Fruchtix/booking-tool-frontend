@@ -39,13 +39,11 @@ const CalendarWeekView = ({ currentWeekDays, openAppointmentDetails, openTimeslo
 
     const newTimeslot: Timeslot = {
       id: uuidv4(),
-      tattooerId: 'todo',
+      tattooerID: 'todo',
+      studioID: 'todo',
       start: timeslotStart,
       end: timeslotEnd,
     };
-
-    // TODO: implement push function in on timeslot provider
-    timeslots.push(newTimeslot);
 
     openTimeslotDetails(newTimeslot);
   };
@@ -116,10 +114,16 @@ const CalendarWeekView = ({ currentWeekDays, openAppointmentDetails, openTimeslo
             <>
               <CalendarEntries
                 entries={appointments}
+                currentWeekDays={currentWeekDays}
                 handleDoubleClick={handleAppointmentDoubleClick}
                 isTimeslot={false}
               />
-              <CalendarEntries entries={timeslots} handleDoubleClick={handleTimeslotDoubleClick} isTimeslot={true} />
+              <CalendarEntries
+                entries={timeslots}
+                currentWeekDays={currentWeekDays}
+                handleDoubleClick={handleTimeslotDoubleClick}
+                isTimeslot={true}
+              />
             </>
           )}
         </div>

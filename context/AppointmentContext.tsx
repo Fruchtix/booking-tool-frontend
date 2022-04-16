@@ -3,12 +3,10 @@ import Appointment from '../interfaces/Appointment';
 
 type AppointmentContext = {
   appointments: Array<Appointment>;
-  resetAppointments: () => void;
 };
 
 const appointmentContextDefaultValues: AppointmentContext = {
   appointments: [],
-  resetAppointments: () => {},
 };
 
 const AppointmentContext = createContext<AppointmentContext>(appointmentContextDefaultValues);

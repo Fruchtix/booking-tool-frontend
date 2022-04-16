@@ -7,13 +7,8 @@ type Props = {
 };
 
 export const AppointmentProvider = ({ appointments, children }: Props) => {
-  const resetAppointments = () => {
-    console.log('resete ap');
-  };
-
   const value = {
     appointments,
-    resetAppointments,
   };
 
   return (
