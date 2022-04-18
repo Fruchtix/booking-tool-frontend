@@ -4,14 +4,15 @@ import dayjs, { Dayjs } from 'dayjs';
 import Appointment from '../../interfaces/Appointment';
 import Timeslot from '../../interfaces/Timeslot';
 import { v4 as uuidv4 } from 'uuid';
-import CalendarEntries from '../CalendarEntries/CalendarEntries';
+import CalendarAppointmentEntries from '../CalendarAppointmentEntries/CalendarAppointmentEntries';
 import { useTimeslots } from '../../context/TimeslotContext';
 import { useAppointments } from '../../context/AppointmentContext';
+import CalendarTimeslotEntries from '../CalendarTimeslotEntries.tsx/CalendarTimeslotEntries';
 
 interface Props {
   currentWeekDays: Array<Dayjs>;
   openAppointmentDetails: (appointment: Appointment) => void;
-  openTimeslotDetails: (timeslot: Timeslot) => void;
+  openTimeslotDetails: (timeslot: Timeslot, isNew?: boolean) => void;
 }
 
 const CalendarWeekView = ({ currentWeekDays, openAppointmentDetails, openTimeslotDetails }: Props) => {
@@ -38,26 +39,26 @@ const CalendarWeekView = ({ currentWeekDays, openAppointmentDetails, openTimeslo
     const timeslotEnd = dayjs(timeslotStart).add(30, 'minute').format();
 
     const newTimeslot: Timeslot = {
-      id: uuidv4(),
+      timeslotID: uuidv4(),
       tattooerID: 'todo',
       studioID: 'todo',
       start: timeslotStart,
       end: timeslotEnd,
     };
 
-    openTimeslotDetails(newTimeslot);
+    openTimeslotDetails(newTimeslot, true);
   };
 
-  const handleAppointmentDoubleClick = (e: React.MouseEvent<HTMLElement>, appointment: Appointment | Timeslot) => {
+  const handleAppointmentDoubleClick = (e: React.MouseEvent<HTMLElement>, appointment: Appointment) => {
     if (e.detail !== 2) return;
 
     openAppointmentDetails(appointment as Appointment);
   };
 
-  const handleTimeslotDoubleClick = (e: React.MouseEvent<HTMLElement>, timeslot: Appointment | Timeslot) => {
+  const handleTimeslotDoubleClick = (e: React.MouseEvent<HTMLElement>, timeslot: Timeslot) => {
     if (e.detail !== 2) return;
 
-    openTimeslotDetails(timeslot as Timeslot);
+    openTimeslotDetails(timeslot);
   };
 
   return (
@@ -112,17 +113,15 @@ const CalendarWeekView = ({ currentWeekDays, openAppointmentDetails, openTimeslo
           ))}
           {isScrolledIntoView && (
             <>
-              <CalendarEntries
+              <CalendarAppointmentEntries
                 entries={appointments}
                 currentWeekDays={currentWeekDays}
                 handleDoubleClick={handleAppointmentDoubleClick}
-                isTimeslot={false}
               />
-              <CalendarEntries
+              <CalendarTimeslotEntries
                 entries={timeslots}
                 currentWeekDays={currentWeekDays}
                 handleDoubleClick={handleTimeslotDoubleClick}
-                isTimeslot={true}
               />
             </>
           )}

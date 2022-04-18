@@ -12,31 +12,46 @@ export const TimeslotProvider = ({ fetchedTimeslots, children }: Props) => {
   const [timeslots, setTimeslots] = useState<Array<Timeslot>>([...fetchedTimeslots]);
 
   const updateTimeslot = async (timeslot: Timeslot) => {
-    const timeslotsWithoutCurrentTimeslot = timeslots.filter(slot => slot.id !== timeslot.id);
-    const isNewTimeslot = timeslotsWithoutCurrentTimeslot.length === timeslots.length;
+    return new Promise(async (resolve, reject) => {
+      const timeslotsWithoutCurrentTimeslot = timeslots.filter(slot => slot.timeslotID !== timeslot.timeslotID);
 
-    if (isNewTimeslot) {
-      // Add Timeslot to dynamoDB
-      await axios
+      // Add/Update Timeslot in dynamoDB
+      axios
         .post('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/timeslots/add', {
           timeslot: timeslot,
         })
-        .then(response => {
-          console.log(response);
+        .then(() => {
+          setTimeslots([...timeslotsWithoutCurrentTimeslot, timeslot]);
+          resolve(true);
         })
         .catch(error => {
-          console.log(error);
+          reject(error);
         });
-    } else {
-      // TODO: call aws update timeslot endpoint => create aws update lambda
-    }
+    });
+  };
 
-    setTimeslots([...timeslotsWithoutCurrentTimeslot, timeslot]);
+  const deleteTimeslot = async (timeslot: Timeslot) => {
+    return new Promise(async (resolve, reject) => {
+      const timeslotsWithoutCurrentTimeslot = timeslots.filter(slot => slot.timeslotID !== timeslot.timeslotID);
+
+      axios
+        .post('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/timeslots/delete', {
+          timeslot: timeslot,
+        })
+        .then(() => {
+          setTimeslots(timeslotsWithoutCurrentTimeslot);
+          resolve(true);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
   };
 
   const value = {
     timeslots,
     updateTimeslot,
+    deleteTimeslot,
   };
 
   return (

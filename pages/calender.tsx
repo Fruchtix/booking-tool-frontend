@@ -29,7 +29,7 @@ const Calender: NextPage<Props> = props => {
 
 export const getServerSideProps: GetServerSideProps = async context => {
   const timeslots = await axios
-    .get('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/timeslots/get?studioID=todo', {
+    .get('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/timeslots/get', {
       params: { studioID: 'todo' },
     })
     .then(response => {

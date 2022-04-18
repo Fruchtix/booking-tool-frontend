@@ -19,6 +19,7 @@ const Calender = () => {
   const [currentWeekDays, setCurrentWeekDays] = useState<any[]>([]);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [selectedTimeslot, setSelectedTimeslot] = useState<Timeslot | null>(null);
+  const [isNewTimeslot, setIsNewTimeslot] = useState(false);
 
   useEffect(() => {
     const currentWeekStart = currentDate.startOf('week');
@@ -43,7 +44,8 @@ const Calender = () => {
     setSelectedAppointment(appointment);
   };
 
-  const openTimeslotDetails = (timeslot: Timeslot) => {
+  const openTimeslotDetails = (timeslot: Timeslot, isNew = false) => {
+    setIsNewTimeslot(isNew);
     setSelectedTimeslot(timeslot);
   };
 
@@ -56,8 +58,19 @@ const Calender = () => {
           onNextClick={handleNextClick}
           onTodayClick={handleTodayClick}
         />
-        <CalendarAppointmentModal appointment={selectedAppointment} closeModal={() => setSelectedAppointment(null)} />
-        <CalendarTimeslotModal timeslot={selectedTimeslot} closeModal={() => setSelectedTimeslot(null)} />
+
+        {selectedAppointment && (
+          <CalendarAppointmentModal appointment={selectedAppointment} closeModal={() => setSelectedAppointment(null)} />
+        )}
+
+        {selectedTimeslot && (
+          <CalendarTimeslotModal
+            timeslot={selectedTimeslot}
+            isNew={isNewTimeslot}
+            closeModal={() => setSelectedTimeslot(null)}
+          />
+        )}
+
         <CalendarWeekView
           currentWeekDays={currentWeekDays}
           openAppointmentDetails={openAppointmentDetails}

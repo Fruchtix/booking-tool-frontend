@@ -16,9 +16,6 @@ const Request: NextPage<Props> = props => {
 };
 
 export const getServerSideProps: GetServerSideProps = async context => {
-  console.log('context: ');
-  console.log(context);
-
   return {
     props: {
       message: 'hi',

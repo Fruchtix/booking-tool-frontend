@@ -1,17 +1,15 @@
 import dayjs from 'dayjs';
 import React from 'react';
-import Appointment from '../../interfaces/Appointment';
 import Timeslot from '../../interfaces/Timeslot';
-import style from './CalendarEntries.module.css';
+import style from './CalendarTimeslotEntries.module.css';
 
 interface Props {
-  entries: Array<Appointment | Timeslot>;
-  handleDoubleClick: (e: React.MouseEvent<HTMLElement>, entry: Appointment | Timeslot) => void;
-  isTimeslot: boolean;
+  entries: Array<Timeslot>;
+  handleDoubleClick: (e: React.MouseEvent<HTMLElement>, entry: Timeslot) => void;
   currentWeekDays: dayjs.Dayjs[];
 }
 
-const CalendarEntries = ({ entries, handleDoubleClick, isTimeslot, currentWeekDays }: Props) => {
+const CalendarTimeslotEntries = ({ entries, handleDoubleClick, currentWeekDays }: Props) => {
   const firstDayOfNextWeek = currentWeekDays[currentWeekDays.length - 1].clone().add(1, 'day');
   const lastDayOfLastWeek = currentWeekDays[0].clone().subtract(1, 'day');
 
@@ -33,12 +31,10 @@ const CalendarEntries = ({ entries, handleDoubleClick, isTimeslot, currentWeekDa
         const startHour = startDate.hour() + startDate.minute() / 60;
         const endHour = endDate.hour() + endDate.minute() / 60;
 
-        const appointmentEntry = entry as Appointment;
-
         return (
           <div
             key={entry.start}
-            className={`${style['entry']} pointer ${isTimeslot ? style['timeslot'] : null}`}
+            className={`${style['entry']} pointer ${style['timeslot']}`}
             data-column={column}
             data-start={startHour}
             style={{
@@ -48,7 +44,7 @@ const CalendarEntries = ({ entries, handleDoubleClick, isTimeslot, currentWeekDa
             }}
             onClick={e => handleDoubleClick(e, entry)}
           >
-            {appointmentEntry.heading || ''}
+            Free
           </div>
         );
       })}
@@ -56,4 +52,4 @@ const CalendarEntries = ({ entries, handleDoubleClick, isTimeslot, currentWeekDa
   );
 };
 
-export default CalendarEntries;
+export default CalendarTimeslotEntries;

@@ -1,5 +1,5 @@
 export default interface Timeslot {
-  id: string;
+  timeslotID: string;
   start: string;
   end: string;
   tattooerID: string;
