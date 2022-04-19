@@ -5,9 +5,10 @@ interface Props {
   onPrevClick: () => void;
   onNextClick: () => void;
   onTodayClick: () => void;
+  onHideTimeslotsClick: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const CalendarControls = ({ currentWeekDays, onPrevClick, onNextClick, onTodayClick }: Props) => {
+const CalendarControls = ({ currentWeekDays, onPrevClick, onNextClick, onTodayClick, onHideTimeslotsClick }: Props) => {
   return (
     <div className={style['control-bar']}>
       <div className={style['left']}>
@@ -28,6 +29,10 @@ const CalendarControls = ({ currentWeekDays, onPrevClick, onNextClick, onTodayCl
       </div>
 
       <div className={style['right']}>
+        <div>
+          <input type="checkbox" name="hide-timeslots" id="hide-timeslots" onChange={onHideTimeslotsClick} />
+          <label htmlFor="hide-timeslots">Hide open timeslots</label>
+        </div>
         <select id="calendar-type" name="calendar-type" defaultValue={'week'}>
           <option value="day">Day</option>
           <option value="week">Week</option>

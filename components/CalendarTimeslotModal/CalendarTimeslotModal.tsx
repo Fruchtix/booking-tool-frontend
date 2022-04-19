@@ -129,6 +129,7 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew }: Props) => {
           </div>
           <div className={style['repeating-container']}>
             {/* TODO: add option for series */}
+            {/* TODO: when creating free timeslot check if other timeslot is during that time */}
             {/* <label htmlFor="repeating">Choose a car:</label>
 
             <select name="repeating" id="repeating">

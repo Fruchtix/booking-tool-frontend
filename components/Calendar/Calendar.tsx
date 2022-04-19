@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import CalendarControls from '../CalendarControls/CalendarControls';
 import style from './Calendar.module.css';
 import CalendarWeekView from '../CalendarWeekView/CalendarWeekView';
@@ -19,6 +19,7 @@ const Calender = () => {
   const [currentWeekDays, setCurrentWeekDays] = useState<any[]>([]);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [selectedTimeslot, setSelectedTimeslot] = useState<Timeslot | null>(null);
+  const [hideTimeslots, setHideTimeslots] = useState(false);
   const [isNewTimeslot, setIsNewTimeslot] = useState(false);
 
   useEffect(() => {
@@ -49,6 +50,10 @@ const Calender = () => {
     setSelectedTimeslot(timeslot);
   };
 
+  const handleHideTimeslotsClick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setHideTimeslots(e.currentTarget.checked);
+  };
+
   return (
     <div className={style['calendar']}>
       <div className={style['container']}>
@@ -57,6 +62,7 @@ const Calender = () => {
           onPrevClick={handlePrevClick}
           onNextClick={handleNextClick}
           onTodayClick={handleTodayClick}
+          onHideTimeslotsClick={handleHideTimeslotsClick}
         />
 
         {selectedAppointment && (
@@ -75,6 +81,7 @@ const Calender = () => {
           currentWeekDays={currentWeekDays}
           openAppointmentDetails={openAppointmentDetails}
           openTimeslotDetails={openTimeslotDetails}
+          hideTimeslots={hideTimeslots}
         />
       </div>
     </div>

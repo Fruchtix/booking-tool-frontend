@@ -13,9 +13,10 @@ interface Props {
   currentWeekDays: Array<Dayjs>;
   openAppointmentDetails: (appointment: Appointment) => void;
   openTimeslotDetails: (timeslot: Timeslot, isNew?: boolean) => void;
+  hideTimeslots: boolean;
 }
 
-const CalendarWeekView = ({ currentWeekDays, openAppointmentDetails, openTimeslotDetails }: Props) => {
+const CalendarWeekView = ({ currentWeekDays, openAppointmentDetails, openTimeslotDetails, hideTimeslots }: Props) => {
   const [isScrolledIntoView, setIsScrolledIntoView] = useState(false);
   const { timeslots } = useTimeslots();
   const { appointments } = useAppointments();
@@ -112,18 +113,18 @@ const CalendarWeekView = ({ currentWeekDays, openAppointmentDetails, openTimeslo
             </div>
           ))}
           {isScrolledIntoView && (
-            <>
-              <CalendarAppointmentEntries
-                entries={appointments}
-                currentWeekDays={currentWeekDays}
-                handleDoubleClick={handleAppointmentDoubleClick}
-              />
-              <CalendarTimeslotEntries
-                entries={timeslots}
-                currentWeekDays={currentWeekDays}
-                handleDoubleClick={handleTimeslotDoubleClick}
-              />
-            </>
+            <CalendarAppointmentEntries
+              entries={appointments}
+              currentWeekDays={currentWeekDays}
+              handleDoubleClick={handleAppointmentDoubleClick}
+            />
+          )}
+          {isScrolledIntoView && !hideTimeslots && (
+            <CalendarTimeslotEntries
+              entries={timeslots}
+              currentWeekDays={currentWeekDays}
+              handleDoubleClick={handleTimeslotDoubleClick}
+            />
           )}
         </div>
       </div>
