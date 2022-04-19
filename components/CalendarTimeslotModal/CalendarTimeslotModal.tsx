@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import style from './CalendarTimeslotModal.module.css';
 import Timeslot from '../../interfaces/Timeslot';
 import dayjs from 'dayjs';
@@ -24,17 +24,6 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew }: Props) => {
     if (e.target !== e.currentTarget) return;
 
     closeModal();
-  };
-
-  const update = () => {
-    // TODO: enhance timeslot modal to configure start, end, repeating
-
-    const updatedTimeslot = { ...currentTimeslot };
-
-    updatedTimeslot.end = dayjs(updatedTimeslot.end).add(2, 'hour').format();
-
-    setHasChanged(true);
-    setCurrentTimeslot(updatedTimeslot);
   };
 
   const saveTimeslot = async () => {
@@ -75,17 +64,80 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew }: Props) => {
   };
 
   const onDeleteBtnClick = () => {
+    if (isNew) {
+      closeModal();
+      return;
+    }
+
     setConfirmModalSuccessFunction(() => deleteCurrentTimeslot);
     setIsConfirmModalVisible(true);
+  };
+
+  const handleStartTimeChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const [start, end] = e.currentTarget.value.split(':');
+
+    setCurrentTimeslot(timeslot => ({
+      ...timeslot,
+      start: dayjs(timeslot.start)
+        .hour(+start)
+        .minute(+end)
+        .format(),
+    }));
+
+    setHasChanged(true);
+  };
+
+  const handleEndTimeChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const [start, end] = e.currentTarget.value.split(':');
+
+    setCurrentTimeslot(timeslot => ({
+      ...timeslot,
+      end: dayjs(timeslot.end)
+        .hour(+start)
+        .minute(+end)
+        .format(),
+    }));
+
+    setHasChanged(true);
   };
 
   return (
     <>
       <div className={style['calendar-modal']} onClick={handleOutsideClick}>
         <div className={style['modal-content']}>
-          <p>start: {currentTimeslot.start}</p>
-          <p>end: {currentTimeslot.end}</p>
-          <div onClick={update}>*</div>
+          <div className={style['start-wrapper']}>
+            <label htmlFor="start-time">start:</label>
+            <input
+              onChange={handleStartTimeChange}
+              type="time"
+              id="start-time"
+              name="start-time"
+              value={`${dayjs(currentTimeslot.start).format('HH')}:${dayjs(currentTimeslot.start).format('mm')}`}
+              required
+            />
+          </div>
+          <div className={style['end-wrapper']}>
+            <label htmlFor="end-time">end:</label>
+            <input
+              onChange={handleEndTimeChange}
+              type="time"
+              id="end-time"
+              name="end-time"
+              value={`${dayjs(currentTimeslot.end).format('HH')}:${dayjs(currentTimeslot.end).format('mm')}`}
+              required
+            />
+          </div>
+          <div className={style['repeating-container']}>
+            {/* TODO: add option for series */}
+            {/* <label htmlFor="repeating">Choose a car:</label>
+
+            <select name="repeating" id="repeating">
+              <option value="volvo">Does not repeat</option>
+              <option value="saab">Saab</option>
+              <option value="mercedes">Mercedes</option>
+              <option value="audi">Audi</option>
+            </select> */}
+          </div>
           <div onClick={closeModal} className={style['close']}>
             x
           </div>

@@ -22,3 +22,13 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.start-wrapper,
+.end-wrapper {
+  margin: 20px 0;
+}
+
+.start-wrapper input,
+.end-wrapper input {
+  margin-left: 10px;
+}
