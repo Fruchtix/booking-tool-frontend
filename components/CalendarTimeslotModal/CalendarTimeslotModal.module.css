@@ -24,11 +24,32 @@
 }
 
 .start-wrapper,
-.end-wrapper {
+.end-wrapper,
+.repeating-wrapper,
+.repeating-days-wrapper {
   margin: 20px 0;
 }
 
 .start-wrapper input,
-.end-wrapper input {
+.end-wrapper input,
+.repeating-wrapper select {
   margin-left: 10px;
+}
+
+.repeating-days-wrapper {
+  display: flex;
+}
+
+.repeating-days-wrapper .days {
+  margin-left: 10px;
+}
+
+.repeating-days-wrapper .day {
+  padding: 5px;
+  border: 1px solid black;
+}
+
+.repeating-days-wrapper .day.selected {
+  background-color: blue;
+  color: #fff;
 }

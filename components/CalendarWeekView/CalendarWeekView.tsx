@@ -37,7 +37,7 @@ const CalendarWeekView = ({ currentWeekDays, openAppointmentDetails, openTimeslo
     const { day, hour, minute } = e.currentTarget.dataset;
 
     const timeslotStart = dayjs(day).hour(Number(hour)).minute(Number(minute)).format();
-    const timeslotEnd = dayjs(timeslotStart).add(30, 'minute').format();
+    const timeslotEnd = dayjs(timeslotStart).add(1, 'hour').format();
 
     const newTimeslot: Timeslot = {
       timeslotID: uuidv4(),

@@ -9,15 +9,18 @@ interface Props {
   timeslot: Timeslot;
   closeModal: () => void;
   isNew: boolean;
+  currentWeekDays: any[];
 }
 
-const CalendarTimeslotModal = ({ timeslot, closeModal, isNew }: Props) => {
+const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }: Props) => {
   const { updateTimeslot, deleteTimeslot } = useTimeslots();
   const [hasChanged, setHasChanged] = useState(false);
   const [currentTimeslot, setCurrentTimeslot] = useState<Timeslot>(timeslot);
   const [isLoading, setIsLoading] = useState(false);
   const [displayError, setDisplayError] = useState(false);
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
+  const [shouldRepeat, setShouldRepeat] = useState(false);
+  const [repeatingDays, setRepeatingDays] = useState<Array<number>>([dayjs(currentTimeslot.start).day()]);
   const [confirmModalSuccessFunction, setConfirmModalSuccessFunction] = useState<() => void>(() => {});
 
   const handleOutsideClick = (e: React.MouseEvent<HTMLElement>) => {
@@ -101,6 +104,25 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew }: Props) => {
     setHasChanged(true);
   };
 
+  const handleRepeatingDayClick = (dayInWeek: number) => {
+    setRepeatingDays(repeatingDays => {
+      const newRepeatingDays = [...repeatingDays];
+      const index = repeatingDays.indexOf(dayInWeek);
+
+      if (index > -1) {
+        newRepeatingDays.splice(index, 1);
+      } else {
+        newRepeatingDays.push(dayInWeek);
+      }
+
+      return newRepeatingDays;
+    });
+  };
+
+  const handleRepeatingChange = () => {
+    setShouldRepeat(shouldRepeat => !shouldRepeat);
+  };
+
   return (
     <>
       <div className={style['calendar-modal']} onClick={handleOutsideClick}>
@@ -127,17 +149,43 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew }: Props) => {
               required
             />
           </div>
-          <div className={style['repeating-container']}>
-            {/* TODO: add option for series */}
+          <div className={style['repeating-wrapper']}>
+            {/* TODO: send repeating infos to aws */}
+            {/* TODO: open confirm modal when closing it without saving */}
+            {/* TODO: add until field in repeating */}
             {/* TODO: when creating free timeslot check if other timeslot is during that time */}
-            {/* <label htmlFor="repeating">Choose a car:</label>
+            <label htmlFor="repeating">repeats:</label>
+            <select
+              value={shouldRepeat ? 'weekly' : 'noRepeat'}
+              name="repeating"
+              id="repeating"
+              onChange={handleRepeatingChange}
+            >
+              <option value="noRepeat">Does not repeat</option>
+              <option value="weekly">weekly</option>
+            </select>
 
-            <select name="repeating" id="repeating">
-              <option value="volvo">Does not repeat</option>
-              <option value="saab">Saab</option>
-              <option value="mercedes">Mercedes</option>
-              <option value="audi">Audi</option>
-            </select> */}
+            {shouldRepeat && (
+              <div className={style['repeating-days-wrapper']}>
+                <label htmlFor="days">On</label>
+                <div className={style['days']} id="days">
+                  {currentWeekDays.map(day => {
+                    const dayInWeek = day.day();
+                    const isSelected = repeatingDays.includes(dayInWeek);
+
+                    return (
+                      <span
+                        key={day.format()}
+                        className={`${style['day']} ${isSelected ? style['selected'] : null} pointer`}
+                        onClick={() => handleRepeatingDayClick(dayInWeek)}
+                      >
+                        {day.format('dd')}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
           <div onClick={closeModal} className={style['close']}>
             x

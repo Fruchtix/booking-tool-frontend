@@ -72,6 +72,7 @@ const Calender = () => {
         {selectedTimeslot && (
           <CalendarTimeslotModal
             timeslot={selectedTimeslot}
+            currentWeekDays={currentWeekDays}
             isNew={isNewTimeslot}
             closeModal={() => setSelectedTimeslot(null)}
           />
