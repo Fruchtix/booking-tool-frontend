@@ -27,7 +27,7 @@ const CalendarAppointmentEntries = ({ entries, handleDoubleClick, currentWeekDay
         }
 
         const endDate = dayjs(entry.end);
-        const column = startDate.day() === 0 ? 7 : startDate.day();
+        const column = startDate.weekday();
         const startHour = startDate.hour() + startDate.minute() / 60;
         const endHour = endDate.hour() + endDate.minute() / 60;
 
@@ -39,7 +39,7 @@ const CalendarAppointmentEntries = ({ entries, handleDoubleClick, currentWeekDay
             data-start={startHour}
             style={{
               top: `calc(100% / 8 * ${startHour})`,
-              transform: `translateX(${column - 1}00%)`,
+              transform: `translateX(${column}00%)`,
               height: `calc(100% / 8 * ${endHour - startHour})`,
             }}
             onClick={e => handleDoubleClick(e, entry)}

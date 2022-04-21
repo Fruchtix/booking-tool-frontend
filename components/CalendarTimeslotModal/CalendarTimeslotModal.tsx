@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import style from './CalendarTimeslotModal.module.css';
 import Timeslot from '../../interfaces/Timeslot';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { useTimeslots } from '../../context/TimeslotContext';
 import ConfirmModal from '../ConfirmModal/ConfirmModal';
 
@@ -19,14 +19,21 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
   const [isLoading, setIsLoading] = useState(false);
   const [displayError, setDisplayError] = useState(false);
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
-  const [shouldRepeat, setShouldRepeat] = useState(false);
-  const [repeatingDays, setRepeatingDays] = useState<Array<number>>([dayjs(currentTimeslot.start).day()]);
+  const [confirmModalButtonOneLabel, setConfirmModalButtonOneLabel] = useState('');
+  const [confirmModalButtonTwoLabel, setConfirmModalButtonTwoLabel] = useState('');
   const [confirmModalSuccessFunction, setConfirmModalSuccessFunction] = useState<() => void>(() => {});
+  const [shouldRepeat, setShouldRepeat] = useState(timeslot.repeats ?? false);
+  const [repeatingDays, setRepeatingDays] = useState<Array<number>>(
+    timeslot.repeatingDays ?? [Number(dayjs(currentTimeslot.start).weekday())]
+  );
+  const [repeatingUntilDate, setRepeatingUntilDate] = useState<string>(
+    timeslot.repeatingEnd ?? dayjs(currentTimeslot.end).add(1, 'week').format('YYYY-MM-DD')
+  );
 
   const handleOutsideClick = (e: React.MouseEvent<HTMLElement>) => {
     if (e.target !== e.currentTarget) return;
 
-    closeModal();
+    handleCloseModal();
   };
 
   const saveTimeslot = async () => {
@@ -35,7 +42,18 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
       setDisplayError(false);
 
       try {
-        await updateTimeslot(currentTimeslot);
+        let timeSlotToUpdate = currentTimeslot;
+
+        if (shouldRepeat && repeatingDays.length !== 0) {
+          timeSlotToUpdate = {
+            ...timeSlotToUpdate,
+            repeats: true,
+            repeatingDays: repeatingDays,
+            repeatingEnd: repeatingUntilDate,
+          };
+        }
+
+        await updateTimeslot(timeSlotToUpdate);
         setIsLoading(false);
       } catch (error: any) {
         handleError(error);
@@ -73,6 +91,8 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
     }
 
     setConfirmModalSuccessFunction(() => deleteCurrentTimeslot);
+    setConfirmModalButtonOneLabel('cancel');
+    setConfirmModalButtonTwoLabel('do it');
     setIsConfirmModalVisible(true);
   };
 
@@ -105,6 +125,8 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
   };
 
   const handleRepeatingDayClick = (dayInWeek: number) => {
+    console.log(repeatingDays);
+
     setRepeatingDays(repeatingDays => {
       const newRepeatingDays = [...repeatingDays];
       const index = repeatingDays.indexOf(dayInWeek);
@@ -117,10 +139,32 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
 
       return newRepeatingDays;
     });
+
+    setHasChanged(true);
   };
 
   const handleRepeatingChange = () => {
     setShouldRepeat(shouldRepeat => !shouldRepeat);
+
+    setHasChanged(true);
+  };
+
+  const handleCloseModal = () => {
+    if (hasChanged) {
+      setConfirmModalSuccessFunction(() => closeModal);
+      setConfirmModalButtonOneLabel('cancel');
+      setConfirmModalButtonTwoLabel('do it');
+      setIsConfirmModalVisible(true);
+    } else {
+      closeModal();
+    }
+  };
+
+  const handleRepeatingUntilDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedDate = dayjs(e.currentTarget.value, 'YYYY-MM-DD').format();
+
+    setRepeatingUntilDate(formattedDate);
+    setHasChanged(true);
   };
 
   return (
@@ -150,9 +194,7 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
             />
           </div>
           <div className={style['repeating-wrapper']}>
-            {/* TODO: send repeating infos to aws */}
-            {/* TODO: open confirm modal when closing it without saving */}
-            {/* TODO: add until field in repeating */}
+            {/* TODO: read repeating data and display timeslots accordingly */}
             {/* TODO: when creating free timeslot check if other timeslot is during that time */}
             <label htmlFor="repeating">repeats:</label>
             <select
@@ -166,28 +208,41 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
             </select>
 
             {shouldRepeat && (
-              <div className={style['repeating-days-wrapper']}>
-                <label htmlFor="days">On</label>
-                <div className={style['days']} id="days">
-                  {currentWeekDays.map(day => {
-                    const dayInWeek = day.day();
-                    const isSelected = repeatingDays.includes(dayInWeek);
+              <>
+                <div className={style['repeating-days-wrapper']}>
+                  <label htmlFor="days">On</label>
+                  <div className={style['days']} id="days">
+                    {currentWeekDays.map((day: Dayjs) => {
+                      const dayInWeek = day.weekday();
+                      const isSelected = repeatingDays.includes(dayInWeek);
 
-                    return (
-                      <span
-                        key={day.format()}
-                        className={`${style['day']} ${isSelected ? style['selected'] : null} pointer`}
-                        onClick={() => handleRepeatingDayClick(dayInWeek)}
-                      >
-                        {day.format('dd')}
-                      </span>
-                    );
-                  })}
+                      return (
+                        <span
+                          key={day.format()}
+                          className={`${style['day']} ${isSelected ? style['selected'] : null} pointer`}
+                          onClick={() => handleRepeatingDayClick(dayInWeek)}
+                        >
+                          {day.format('dd')}
+                        </span>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+                <div className={style['until']}>
+                  <label htmlFor="until-date">Until:</label>
+                  <input
+                    type="date"
+                    name="until-date"
+                    id="until-date"
+                    min={dayjs(currentTimeslot.end).add(1, 'day').format('YYYY-MM-DD')}
+                    value={dayjs(repeatingUntilDate).format('YYYY-MM-DD')}
+                    onChange={handleRepeatingUntilDateChange}
+                  />
+                </div>
+              </>
             )}
           </div>
-          <div onClick={closeModal} className={style['close']}>
+          <div onClick={handleCloseModal} className={style['close']}>
             x
           </div>
           {displayError && <div>Sorry an error ahas occured, please submit again...</div>}
@@ -204,8 +259,8 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
       </div>
       {isConfirmModalVisible && (
         <ConfirmModal
-          optionOneTxt="doch nicht"
-          optionTwoTxt="do it"
+          optionOneTxt={confirmModalButtonOneLabel}
+          optionTwoTxt={confirmModalButtonTwoLabel}
           handleOptionOneClick={() => setIsConfirmModalVisible(false)}
           handleOptionTwoClick={() => {
             setIsConfirmModalVisible(false);

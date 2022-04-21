@@ -10,7 +10,7 @@ const Sidebar = () => {
             <Link href="/dashboard">dashboard</Link>
           </li>
           <li>
-            <Link href="/calender">Calender</Link>
+            <Link href="/calendar">Calendar</Link>
           </li>
           <li>
             <Link href="/requests">requests</Link>

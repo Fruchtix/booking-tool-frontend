@@ -4,6 +4,8 @@ import style from './Calendar.module.css';
 import CalendarWeekView from '../CalendarWeekView/CalendarWeekView';
 import dayjs from 'dayjs';
 import de from 'dayjs/locale/de';
+import weekday from 'dayjs/plugin/weekday';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import Appointment from '../../interfaces/Appointment';
 import CalendarAppointmentModal from '../CalendarAppointmentModal/CalendarAppointmentModal';
 import CalendarTimeslotModal from '../CalendarTimeslotModal/CalendarTimeslotModal';
@@ -14,7 +16,10 @@ dayjs.locale({
   weekStart: 1,
 });
 
-const Calender = () => {
+dayjs.extend(customParseFormat);
+dayjs.extend(weekday);
+
+const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [currentWeekDays, setCurrentWeekDays] = useState<any[]>([]);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
@@ -89,4 +94,4 @@ const Calender = () => {
   );
 };
 
-export default Calender;
+export default Calendar;

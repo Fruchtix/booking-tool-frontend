@@ -1,6 +1,6 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Layout from '../components/Layout/Layout';
-import CustomCalender from '../components/Calendar/Calendar';
+import CustomCalendar from '../components/Calendar/Calendar';
 import Appointment from '../interfaces/Appointment';
 import dayjs from 'dayjs';
 import Timeslot from '../interfaces/Timeslot';
@@ -13,14 +13,14 @@ interface Props {
   timeslots: Array<Timeslot>;
 }
 
-const Calender: NextPage<Props> = props => {
+const Calendar: NextPage<Props> = props => {
   const { appointments, timeslots } = props;
 
   return (
     <Layout>
       <TimeslotProvider fetchedTimeslots={timeslots}>
         <AppointmentProvider appointments={appointments}>
-          <CustomCalender />
+          <CustomCalendar />
         </AppointmentProvider>
       </TimeslotProvider>
     </Layout>
@@ -75,4 +75,4 @@ export const getServerSideProps: GetServerSideProps = async context => {
   };
 };
 
-export default Calender;
+export default Calendar;

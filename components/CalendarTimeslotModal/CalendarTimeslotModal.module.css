@@ -32,6 +32,7 @@
 
 .start-wrapper input,
 .end-wrapper input,
+.repeating-wrapper input,
 .repeating-wrapper select {
   margin-left: 10px;
 }
