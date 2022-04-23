@@ -19,9 +19,10 @@ export const TimeslotProvider = ({ fetchedTimeslots, children }: Props) => {
       axios
         .post('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/timeslots/add', {
           timeslot: timeslot,
+          updateSeries: timeslot.repeats,
         })
-        .then(() => {
-          setTimeslots([...timeslotsWithoutCurrentTimeslot, timeslot]);
+        .then(res => {
+          setTimeslots([...timeslotsWithoutCurrentTimeslot, ...res.data]);
           resolve(true);
         })
         .catch(error => {

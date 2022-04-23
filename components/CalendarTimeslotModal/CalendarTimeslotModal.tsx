@@ -4,6 +4,7 @@ import Timeslot from '../../interfaces/Timeslot';
 import dayjs, { Dayjs } from 'dayjs';
 import { useTimeslots } from '../../context/TimeslotContext';
 import ConfirmModal from '../ConfirmModal/ConfirmModal';
+import { v4 as uuidv4 } from 'uuid';
 
 interface Props {
   timeslot: Timeslot;
@@ -27,7 +28,7 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
     timeslot.repeatingDays ?? [Number(dayjs(currentTimeslot.start).weekday())]
   );
   const [repeatingUntilDate, setRepeatingUntilDate] = useState<string>(
-    timeslot.repeatingEnd ?? dayjs(currentTimeslot.end).add(1, 'week').format('YYYY-MM-DD')
+    timeslot.repeatingEnd ?? dayjs(currentTimeslot.end).add(1, 'day').format('YYYY-MM-DD')
   );
 
   const handleOutsideClick = (e: React.MouseEvent<HTMLElement>) => {
@@ -48,8 +49,9 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
           timeSlotToUpdate = {
             ...timeSlotToUpdate,
             repeats: true,
-            repeatingDays: repeatingDays,
-            repeatingEnd: repeatingUntilDate,
+            repeatingDays: repeatingDays.sort(),
+            repeatingEnd: dayjs(repeatingUntilDate).hour(23).minute(59).format(),
+            seriesID: uuidv4(),
           };
         }
 
@@ -194,8 +196,13 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
             />
           </div>
           <div className={style['repeating-wrapper']}>
+            {/* TODO: when series save multiple timeslots */}
+            {/* TODO: 
+                  - 
+            */}
             {/* TODO: read repeating data and display timeslots accordingly */}
             {/* TODO: when creating free timeslot check if other timeslot is during that time */}
+            {/* TODO: initial loading => display loading state */}
             <label htmlFor="repeating">repeats:</label>
             <select
               value={shouldRepeat ? 'weekly' : 'noRepeat'}

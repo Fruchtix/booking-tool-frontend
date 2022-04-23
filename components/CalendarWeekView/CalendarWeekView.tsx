@@ -66,7 +66,7 @@ const CalendarWeekView = ({ currentWeekDays, openAppointmentDetails, openTimeslo
     <div className={style['week-view']}>
       <div className={style['header']}>
         {currentWeekDays.map(day => {
-          const isCurrentDay = day.date() === dayjs().date();
+          const isCurrentDay = day.isSame(dayjs(), 'day');
 
           return (
             <div key={day.format()} className={style['row-header']}>

@@ -33,7 +33,7 @@ const CalendarTimeslotEntries = ({ entries, handleDoubleClick, currentWeekDays }
 
         return (
           <div
-            key={entry.start}
+            key={entry.timeslotID}
             className={`${style['entry']} pointer ${style['timeslot']}`}
             data-column={column}
             data-start={startHour}
