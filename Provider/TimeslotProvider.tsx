@@ -11,18 +11,19 @@ type Props = {
 export const TimeslotProvider = ({ fetchedTimeslots, children }: Props) => {
   const [timeslots, setTimeslots] = useState<Array<Timeslot>>([...fetchedTimeslots]);
 
-  const updateTimeslot = async (timeslot: Timeslot) => {
+  const updateTimeslot = async (timeslot: Timeslot, updateSeries: boolean) => {
     return new Promise(async (resolve, reject) => {
-      const timeslotsWithoutCurrentTimeslot = timeslots.filter(slot => slot.timeslotID !== timeslot.timeslotID);
-
       // Add/Update Timeslot in dynamoDB
       axios
         .post('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/timeslots/add', {
           timeslot: timeslot,
-          updateSeries: timeslot.repeats,
+          updateSeries: updateSeries,
         })
         .then(res => {
-          setTimeslots([...timeslotsWithoutCurrentTimeslot, ...res.data]);
+          setTimeslots(currentTimeslots => [
+            ...currentTimeslots.filter(slot => slot.timeslotID !== timeslot.timeslotID),
+            ...res.data,
+          ]);
           resolve(true);
         })
         .catch(error => {
@@ -33,14 +34,28 @@ export const TimeslotProvider = ({ fetchedTimeslots, children }: Props) => {
 
   const deleteTimeslot = async (timeslot: Timeslot) => {
     return new Promise(async (resolve, reject) => {
-      const timeslotsWithoutCurrentTimeslot = timeslots.filter(slot => slot.timeslotID !== timeslot.timeslotID);
-
       axios
         .post('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/timeslots/delete', {
           timeslot: timeslot,
         })
         .then(() => {
-          setTimeslots(timeslotsWithoutCurrentTimeslot);
+          setTimeslots(currentTimeslots => currentTimeslots.filter(slot => slot.timeslotID !== timeslot.timeslotID));
+          resolve(true);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  };
+
+  const deleteTimeslotSeries = async (timeslot: Timeslot) => {
+    return new Promise(async (resolve, reject) => {
+      axios
+        .post('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/timeslots/delete-series', {
+          timeslot: timeslot,
+        })
+        .then(() => {
+          setTimeslots(currentTimeslots => currentTimeslots.filter(slot => slot.seriesID !== timeslot.seriesID));
           resolve(true);
         })
         .catch(error => {
@@ -53,6 +68,7 @@ export const TimeslotProvider = ({ fetchedTimeslots, children }: Props) => {
     timeslots,
     updateTimeslot,
     deleteTimeslot,
+    deleteTimeslotSeries,
   };
 
   return (

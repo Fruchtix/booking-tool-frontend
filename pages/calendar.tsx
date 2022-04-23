@@ -36,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
       return response.data;
     })
     .catch(error => {
-      console.log(error);
+      console.log(error.response.data);
     });
 
   return {
@@ -70,7 +70,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
           describtion: 'lorem ipsum description - images will also be displayed here',
         },
       ],
-      timeslots: timeslots,
+      timeslots: timeslots || [],
     },
   };
 };

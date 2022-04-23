@@ -3,14 +3,16 @@ import Timeslot from '../interfaces/Timeslot';
 
 type TimeslotContext = {
   timeslots: Array<Timeslot>;
-  updateTimeslot: (timeslot: Timeslot) => Promise<unknown>;
+  updateTimeslot: (timeslot: Timeslot, updateSeries: boolean) => Promise<unknown>;
   deleteTimeslot: (timeslot: Timeslot) => Promise<unknown>;
+  deleteTimeslotSeries: (timeslot: Timeslot) => Promise<unknown>;
 };
 
 const timeslotContextDefaultValues: TimeslotContext = {
   timeslots: [],
   updateTimeslot: () => new Promise(() => {}),
   deleteTimeslot: () => new Promise(() => {}),
+  deleteTimeslotSeries: () => new Promise(() => {}),
 };
 
 const TimeslotContext = createContext<TimeslotContext>(timeslotContextDefaultValues);

@@ -94,6 +94,7 @@
 .slot .first-half,
 .slot .second-half {
   flex: 1;
+  z-index: 5;
 }
 
 .slot .first-half {

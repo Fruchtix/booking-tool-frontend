@@ -1,10 +1,5 @@
 IDEAS:
 
-make each timeslot has a seriesId and series data like now 
-    => delete series:
-        - search for each item with the series ID
-
 
 TODO:
 
-- when adding timeslot with series data => make multiple out of them in aws

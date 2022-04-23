@@ -29,7 +29,11 @@ const CalendarTimeslotEntries = ({ entries, handleDoubleClick, currentWeekDays }
         const endDate = dayjs(entry.end);
         const column = startDate.weekday();
         const startHour = startDate.hour() + startDate.minute() / 60;
-        const endHour = endDate.hour() + endDate.minute() / 60;
+        let endHour = endDate.hour() + endDate.minute() / 60;
+
+        if (endHour === 0) {
+          endHour = 24;
+        }
 
         return (
           <div

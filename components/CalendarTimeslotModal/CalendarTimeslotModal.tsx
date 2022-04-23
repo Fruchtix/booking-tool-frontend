@@ -14,8 +14,10 @@ interface Props {
 }
 
 const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }: Props) => {
-  const { updateTimeslot, deleteTimeslot } = useTimeslots();
+  const { updateTimeslot, deleteTimeslot, deleteTimeslotSeries } = useTimeslots();
   const [hasChanged, setHasChanged] = useState(false);
+  const [shouldUpdateSeries, setShouldUpdateSeries] = useState(true);
+  const [shouldDeleteSeriesBeforeUpdate, setShouldDeleteSeriesBeforeUpdate] = useState(false);
   const [currentTimeslot, setCurrentTimeslot] = useState<Timeslot>(timeslot);
   const [isLoading, setIsLoading] = useState(false);
   const [displayError, setDisplayError] = useState(false);
@@ -51,11 +53,23 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
             repeats: true,
             repeatingDays: repeatingDays.sort(),
             repeatingEnd: dayjs(repeatingUntilDate).hour(23).minute(59).format(),
-            seriesID: uuidv4(),
+            seriesID:
+              shouldDeleteSeriesBeforeUpdate || !timeSlotToUpdate.seriesID ? uuidv4() : timeSlotToUpdate.seriesID,
           };
         }
 
-        await updateTimeslot(timeSlotToUpdate);
+        if (currentTimeslot.seriesID && shouldDeleteSeriesBeforeUpdate) {
+          console.log('delete before');
+
+          await Promise.all([
+            deleteTimeslotSeries(currentTimeslot),
+            updateTimeslot(timeSlotToUpdate, shouldUpdateSeries),
+          ]);
+        } else {
+          console.log('do not delete');
+          await updateTimeslot(timeSlotToUpdate, shouldUpdateSeries);
+        }
+
         setIsLoading(false);
       } catch (error: any) {
         handleError(error);
@@ -70,7 +84,12 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
     setIsLoading(true);
 
     try {
-      await deleteTimeslot(currentTimeslot);
+      if (shouldUpdateSeries && timeslot.repeats) {
+        await deleteTimeslotSeries(currentTimeslot);
+      } else {
+        await deleteTimeslot(currentTimeslot);
+      }
+
       setIsLoading(false);
     } catch (error: any) {
       handleError(error);
@@ -127,8 +146,6 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
   };
 
   const handleRepeatingDayClick = (dayInWeek: number) => {
-    console.log(repeatingDays);
-
     setRepeatingDays(repeatingDays => {
       const newRepeatingDays = [...repeatingDays];
       const index = repeatingDays.indexOf(dayInWeek);
@@ -138,6 +155,8 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
       } else {
         newRepeatingDays.push(dayInWeek);
       }
+
+      setShouldDeleteSeriesBeforeUpdate(true);
 
       return newRepeatingDays;
     });
@@ -167,12 +186,31 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
 
     setRepeatingUntilDate(formattedDate);
     setHasChanged(true);
+    setShouldDeleteSeriesBeforeUpdate(true);
+  };
+
+  const handleShouldUpdateSeriesChange = () => {
+    setShouldUpdateSeries(value => !value);
   };
 
   return (
     <>
       <div className={style['calendar-modal']} onClick={handleOutsideClick}>
         <div className={style['modal-content']}>
+          {shouldRepeat && !isNew && (
+            <div>
+              <select
+                value={shouldUpdateSeries ? 'series' : 'occurrence'}
+                name="target"
+                id="target"
+                onChange={handleShouldUpdateSeriesChange}
+              >
+                <option value="occurrence">Edit only this occurrence</option>
+                <option value="series">Edit whole series</option>
+              </select>
+            </div>
+          )}
+
           <div className={style['start-wrapper']}>
             <label htmlFor="start-time">start:</label>
             <input
@@ -196,25 +234,29 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
             />
           </div>
           <div className={style['repeating-wrapper']}>
-            {/* TODO: when series save multiple timeslots */}
-            {/* TODO: 
-                  - 
-            */}
-            {/* TODO: read repeating data and display timeslots accordingly */}
+            {/* TODO: allow changes to time series in the past when you change further event => introduct start date and set this as start*/}
+            {/* TODO: add start date to timeslot series */}
+            {/* TODO: end time can't be ealier than start */}
             {/* TODO: when creating free timeslot check if other timeslot is during that time */}
             {/* TODO: initial loading => display loading state */}
-            <label htmlFor="repeating">repeats:</label>
-            <select
-              value={shouldRepeat ? 'weekly' : 'noRepeat'}
-              name="repeating"
-              id="repeating"
-              onChange={handleRepeatingChange}
-            >
-              <option value="noRepeat">Does not repeat</option>
-              <option value="weekly">weekly</option>
-            </select>
+            {shouldUpdateSeries && (
+              <>
+                <label htmlFor="repeating">repeats:</label>
+                <select
+                  value={shouldRepeat ? 'weekly' : 'noRepeat'}
+                  name="repeating"
+                  id="repeating"
+                  onChange={handleRepeatingChange}
+                >
+                  <option value="noRepeat" disabled={shouldRepeat && !isNew}>
+                    Does not repeat
+                  </option>
+                  <option value="weekly">weekly</option>
+                </select>
+              </>
+            )}
 
-            {shouldRepeat && (
+            {shouldRepeat && shouldUpdateSeries && (
               <>
                 <div className={style['repeating-days-wrapper']}>
                   <label htmlFor="days">On</label>
@@ -254,7 +296,7 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
           </div>
           {displayError && <div>Sorry an error ahas occured, please submit again...</div>}
           <div>
-            <button type="button" onClick={saveTimeslot}>
+            <button type="button" onClick={saveTimeslot} disabled={repeatingDays.length === 0}>
               save
             </button>
             <button type="button" onClick={onDeleteBtnClick}>
