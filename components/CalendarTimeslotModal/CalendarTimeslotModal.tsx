@@ -26,6 +26,7 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
   const [confirmModalButtonTwoLabel, setConfirmModalButtonTwoLabel] = useState('');
   const [confirmModalSuccessFunction, setConfirmModalSuccessFunction] = useState<() => void>(() => {});
   const [shouldRepeat, setShouldRepeat] = useState(timeslot.repeats ?? false);
+  const [repeatingStartDate, setReapeatingStartDate] = useState(timeslot.repeatingStartDate ?? currentTimeslot.start);
   const [repeatingDays, setRepeatingDays] = useState<Array<number>>(
     timeslot.repeatingDays ?? [Number(dayjs(currentTimeslot.start).weekday())]
   );
@@ -51,6 +52,7 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
           timeSlotToUpdate = {
             ...timeSlotToUpdate,
             repeats: true,
+            repeatingStartDate: repeatingStartDate,
             repeatingDays: repeatingDays.sort(),
             repeatingEnd: dayjs(repeatingUntilDate).hour(23).minute(59).format(),
             seriesID:
@@ -59,14 +61,11 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
         }
 
         if (currentTimeslot.seriesID && shouldDeleteSeriesBeforeUpdate) {
-          console.log('delete before');
-
           await Promise.all([
             deleteTimeslotSeries(currentTimeslot),
             updateTimeslot(timeSlotToUpdate, shouldUpdateSeries),
           ]);
         } else {
-          console.log('do not delete');
           await updateTimeslot(timeSlotToUpdate, shouldUpdateSeries);
         }
 
@@ -115,6 +114,27 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
     setConfirmModalButtonOneLabel('cancel');
     setConfirmModalButtonTwoLabel('do it');
     setIsConfirmModalVisible(true);
+  };
+
+  const handleStartDateChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const timeslotDate = e.currentTarget.value;
+
+    setCurrentTimeslot(timeslot => {
+      const start = dayjs(timeslot.start);
+      const end = dayjs(timeslot.end);
+      const startHour = start.hour();
+      const startMinute = start.minute();
+      const endHour = end.hour();
+      const endMinute = end.minute();
+
+      return {
+        ...timeslot,
+        start: dayjs(timeslotDate).hour(startHour).minute(startMinute).format(),
+        end: dayjs(timeslotDate).hour(endHour).minute(endMinute).format(),
+      };
+    });
+
+    setHasChanged(true);
   };
 
   const handleStartTimeChange = (e: React.FormEvent<HTMLInputElement>) => {
@@ -181,6 +201,19 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
     }
   };
 
+  const handleRepeatingStartDateChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const newValue = e.currentTarget.value;
+
+    setReapeatingStartDate(currentDate => {
+      const current = dayjs(currentDate);
+
+      return dayjs(newValue).hour(current.hour()).minute(current.minute()).format();
+    });
+
+    setHasChanged(true);
+    setShouldDeleteSeriesBeforeUpdate(true);
+  };
+
   const handleRepeatingUntilDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedDate = dayjs(e.currentTarget.value, 'YYYY-MM-DD').format();
 
@@ -196,7 +229,7 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
   return (
     <>
       <div className={style['calendar-modal']} onClick={handleOutsideClick}>
-        <div className={style['modal-content']}>
+        <form className={style['modal-content']} onSubmit={saveTimeslot}>
           {shouldRepeat && !isNew && (
             <div>
               <select
@@ -211,6 +244,20 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
             </div>
           )}
 
+          <div className={style['date-wrapper']}>
+            <label htmlFor="start-date">{shouldRepeat && shouldUpdateSeries ? 'start date:' : 'date:'}</label>
+            <input
+              type="date"
+              name="start-date"
+              id="start-date"
+              value={
+                shouldRepeat && shouldUpdateSeries
+                  ? dayjs(repeatingStartDate).format('YYYY-MM-DD')
+                  : dayjs(currentTimeslot.start).format('YYYY-MM-DD')
+              }
+              onChange={e => (shouldRepeat ? handleRepeatingStartDateChange(e) : handleStartDateChange(e))}
+            />
+          </div>
           <div className={style['start-wrapper']}>
             <label htmlFor="start-time">start:</label>
             <input
@@ -218,7 +265,7 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
               type="time"
               id="start-time"
               name="start-time"
-              value={`${dayjs(currentTimeslot.start).format('HH')}:${dayjs(currentTimeslot.start).format('mm')}`}
+              value={dayjs(currentTimeslot.start).format('HH:mm')}
               required
             />
           </div>
@@ -229,16 +276,17 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
               type="time"
               id="end-time"
               name="end-time"
-              value={`${dayjs(currentTimeslot.end).format('HH')}:${dayjs(currentTimeslot.end).format('mm')}`}
+              min={dayjs(currentTimeslot.start).add(15, 'minute').format('HH:mm')}
+              value={dayjs(currentTimeslot.end).format('HH:mm')}
               required
             />
           </div>
           <div className={style['repeating-wrapper']}>
-            {/* TODO: allow changes to time series in the past when you change further event => introduct start date and set this as start*/}
-            {/* TODO: add start date to timeslot series */}
-            {/* TODO: end time can't be ealier than start */}
-            {/* TODO: when creating free timeslot check if other timeslot is during that time */}
+            {/* TODO: look into timezone aws lambda */}
+            {/* TODO: lamda only return day from next and prev month */}
+            {/* TODO: only load data from last and next month */}
             {/* TODO: initial loading => display loading state */}
+            {/* TODO: when creating free timeslot check if other timeslot is during that time */}
             {shouldUpdateSeries && (
               <>
                 <label htmlFor="repeating">repeats:</label>
@@ -283,7 +331,7 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
                     type="date"
                     name="until-date"
                     id="until-date"
-                    min={dayjs(currentTimeslot.end).add(1, 'day').format('YYYY-MM-DD')}
+                    min={dayjs(currentTimeslot.repeatingStartDate).add(1, 'day').format('YYYY-MM-DD')}
                     value={dayjs(repeatingUntilDate).format('YYYY-MM-DD')}
                     onChange={handleRepeatingUntilDateChange}
                   />
@@ -296,7 +344,7 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
           </div>
           {displayError && <div>Sorry an error ahas occured, please submit again...</div>}
           <div>
-            <button type="button" onClick={saveTimeslot} disabled={repeatingDays.length === 0}>
+            <button type="submit" disabled={repeatingDays.length === 0}>
               save
             </button>
             <button type="button" onClick={onDeleteBtnClick}>
@@ -304,7 +352,7 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
             </button>
           </div>
           {isLoading && <div>It is loading motherfukcer</div>}
-        </div>
+        </form>
       </div>
       {isConfirmModalVisible && (
         <ConfirmModal

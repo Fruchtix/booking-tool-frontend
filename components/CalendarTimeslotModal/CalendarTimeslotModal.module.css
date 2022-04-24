@@ -26,13 +26,15 @@
 .start-wrapper,
 .end-wrapper,
 .repeating-wrapper,
-.repeating-days-wrapper {
+.repeating-days-wrapper,
+.date-wrapper {
   margin: 20px 0;
 }
 
 .start-wrapper input,
 .end-wrapper input,
 .repeating-wrapper input,
+.date-wrapper input,
 .repeating-wrapper select {
   margin-left: 10px;
 }
