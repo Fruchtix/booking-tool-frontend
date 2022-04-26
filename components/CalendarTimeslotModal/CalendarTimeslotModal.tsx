@@ -282,10 +282,9 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
             />
           </div>
           <div className={style['repeating-wrapper']}>
+            {/* TODO: lamda: only return day from next and prev month */}
+
             {/* TODO: look into timezone aws lambda */}
-            {/* TODO: lamda only return day from next and prev month */}
-            {/* TODO: only load data from last and next month */}
-            {/* TODO: initial loading => display loading state */}
             {/* TODO: when creating free timeslot check if other timeslot is during that time */}
             {shouldUpdateSeries && (
               <>

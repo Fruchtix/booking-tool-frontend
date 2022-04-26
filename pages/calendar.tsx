@@ -11,14 +11,20 @@ import axios from 'axios';
 interface Props {
   appointments: Array<Appointment>;
   timeslots: Array<Timeslot>;
+  timeslotRangeStart: string;
+  timeslotRangeEnd: string;
 }
 
 const Calendar: NextPage<Props> = props => {
-  const { appointments, timeslots } = props;
+  const { appointments, timeslots, timeslotRangeStart, timeslotRangeEnd } = props;
 
   return (
     <Layout>
-      <TimeslotProvider fetchedTimeslots={timeslots}>
+      <TimeslotProvider
+        fetchedTimeslots={timeslots}
+        timeslotRangeStart={timeslotRangeStart}
+        timeslotRangeEnd={timeslotRangeEnd}
+      >
         <AppointmentProvider appointments={appointments}>
           <CustomCalendar />
         </AppointmentProvider>
@@ -28,9 +34,16 @@ const Calendar: NextPage<Props> = props => {
 };
 
 export const getServerSideProps: GetServerSideProps = async context => {
+  const todayMinusOneMonth = dayjs().subtract(1, 'month').format();
+  const todayPlusOneMonth = dayjs().add(1, 'month').format();
+
   const timeslots = await axios
     .get('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/timeslots/get', {
-      params: { studioID: 'todo' },
+      params: {
+        studioID: 'todo',
+        rangeStartDate: todayMinusOneMonth,
+        rangeEndDate: todayPlusOneMonth,
+      },
     })
     .then(response => {
       return response.data;
@@ -71,6 +84,8 @@ export const getServerSideProps: GetServerSideProps = async context => {
         },
       ],
       timeslots: timeslots || [],
+      timeslotRangeStart: todayMinusOneMonth,
+      timeslotRangeEnd: todayPlusOneMonth,
     },
   };
 };

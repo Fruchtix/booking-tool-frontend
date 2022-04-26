@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CalendarControls from '../CalendarControls/CalendarControls';
 import style from './Calendar.module.css';
 import CalendarWeekView from '../CalendarWeekView/CalendarWeekView';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import de from 'dayjs/locale/de';
 import weekday from 'dayjs/plugin/weekday';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -10,6 +10,7 @@ import Appointment from '../../interfaces/Appointment';
 import CalendarAppointmentModal from '../CalendarAppointmentModal/CalendarAppointmentModal';
 import CalendarTimeslotModal from '../CalendarTimeslotModal/CalendarTimeslotModal';
 import Timeslot from '../../interfaces/Timeslot';
+import { useTimeslots } from '../../context/TimeslotContext';
 
 dayjs.locale({
   ...de,
@@ -27,12 +28,16 @@ const Calendar = () => {
   const [hideTimeslots, setHideTimeslots] = useState(false);
   const [isNewTimeslot, setIsNewTimeslot] = useState(false);
 
+  const { checkForNewTimeslots } = useTimeslots();
+
   useEffect(() => {
     const currentWeekStart = currentDate.startOf('week');
     const daysInWeek = new Array(7).fill(currentWeekStart).map((day, index) => day.add(index, 'day'));
 
     setCurrentWeekDays(daysInWeek);
-  }, [currentDate]);
+
+    checkForNewTimeslots(currentWeekStart);
+  }, [currentDate, checkForNewTimeslots]);
 
   const handlePrevClick = () => {
     setCurrentDate(currentDate => currentDate.subtract(7, 'day'));

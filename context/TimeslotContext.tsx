@@ -1,3 +1,4 @@
+import { Dayjs } from 'dayjs';
 import { createContext, useContext } from 'react';
 import Timeslot from '../interfaces/Timeslot';
 
@@ -6,6 +7,7 @@ type TimeslotContext = {
   updateTimeslot: (timeslot: Timeslot, updateSeries: boolean) => Promise<unknown>;
   deleteTimeslot: (timeslot: Timeslot) => Promise<unknown>;
   deleteTimeslotSeries: (timeslot: Timeslot) => Promise<unknown>;
+  checkForNewTimeslots: (date: Dayjs) => Promise<unknown>;
 };
 
 const timeslotContextDefaultValues: TimeslotContext = {
@@ -13,6 +15,7 @@ const timeslotContextDefaultValues: TimeslotContext = {
   updateTimeslot: () => new Promise(() => {}),
   deleteTimeslot: () => new Promise(() => {}),
   deleteTimeslotSeries: () => new Promise(() => {}),
+  checkForNewTimeslots: () => new Promise(() => {}),
 };
 
 const TimeslotContext = createContext<TimeslotContext>(timeslotContextDefaultValues);
