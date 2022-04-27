@@ -27,9 +27,7 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
   const [confirmModalSuccessFunction, setConfirmModalSuccessFunction] = useState<() => void>(() => {});
   const [shouldRepeat, setShouldRepeat] = useState(timeslot.repeats ?? false);
   const [repeatingStartDate, setReapeatingStartDate] = useState(timeslot.repeatingStartDate ?? currentTimeslot.start);
-  const [repeatingDays, setRepeatingDays] = useState<Array<number>>(
-    timeslot.repeatingDays ?? [Number(dayjs(currentTimeslot.start).weekday())]
-  );
+  const [repeatingDays, setRepeatingDays] = useState<Array<number>>(timeslot.repeatingDays ?? [0]);
   const [repeatingUntilDate, setRepeatingUntilDate] = useState<string>(
     timeslot.repeatingEnd ?? dayjs(currentTimeslot.end).add(1, 'day').format('YYYY-MM-DD')
   );
@@ -40,7 +38,9 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
     handleCloseModal();
   };
 
-  const saveTimeslot = async () => {
+  const saveTimeslot = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     if (hasChanged || isNew) {
       setIsLoading(true);
       setDisplayError(false);
@@ -151,6 +151,19 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
     setHasChanged(true);
   };
 
+  const handleRepeatingStartTimeChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const [start, end] = e.currentTarget.value.split(':');
+
+    setReapeatingStartDate(currentDate =>
+      dayjs(currentDate)
+        .hour(+start)
+        .minute(+end)
+        .format()
+    );
+    handleStartTimeChange(e);
+    setShouldDeleteSeriesBeforeUpdate(true);
+  };
+
   const handleEndTimeChange = (e: React.FormEvent<HTMLInputElement>) => {
     const [start, end] = e.currentTarget.value.split(':');
 
@@ -165,22 +178,26 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
     setHasChanged(true);
   };
 
-  const handleRepeatingDayClick = (dayInWeek: number) => {
+  const handleRepeatingEndTimeChange = (e: React.FormEvent<HTMLInputElement>) => {
+    handleEndTimeChange(e);
+    setShouldDeleteSeriesBeforeUpdate(true);
+  };
+
+  const handleRepeatingDayClick = (day: number) => {
     setRepeatingDays(repeatingDays => {
       const newRepeatingDays = [...repeatingDays];
-      const index = repeatingDays.indexOf(dayInWeek);
+      const index = repeatingDays.indexOf(day);
 
       if (index > -1) {
         newRepeatingDays.splice(index, 1);
       } else {
-        newRepeatingDays.push(dayInWeek);
+        newRepeatingDays.push(day);
       }
-
-      setShouldDeleteSeriesBeforeUpdate(true);
 
       return newRepeatingDays;
     });
 
+    setShouldDeleteSeriesBeforeUpdate(true);
     setHasChanged(true);
   };
 
@@ -209,7 +226,7 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
 
       return dayjs(newValue).hour(current.hour()).minute(current.minute()).format();
     });
-
+    setRepeatingDays([0]);
     setHasChanged(true);
     setShouldDeleteSeriesBeforeUpdate(true);
   };
@@ -250,18 +267,24 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
               type="date"
               name="start-date"
               id="start-date"
+              min={dayjs().format('YYYY-MM-DD')}
+              max={dayjs().add(2, 'year').format('YYYY-MM-DD')}
               value={
                 shouldRepeat && shouldUpdateSeries
                   ? dayjs(repeatingStartDate).format('YYYY-MM-DD')
                   : dayjs(currentTimeslot.start).format('YYYY-MM-DD')
               }
-              onChange={e => (shouldRepeat ? handleRepeatingStartDateChange(e) : handleStartDateChange(e))}
+              onChange={e =>
+                shouldRepeat && shouldUpdateSeries ? handleRepeatingStartDateChange(e) : handleStartDateChange(e)
+              }
             />
           </div>
           <div className={style['start-wrapper']}>
             <label htmlFor="start-time">start:</label>
             <input
-              onChange={handleStartTimeChange}
+              onChange={e =>
+                shouldRepeat && shouldUpdateSeries ? handleRepeatingStartTimeChange(e) : handleStartTimeChange(e)
+              }
               type="time"
               id="start-time"
               name="start-time"
@@ -272,7 +295,9 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
           <div className={style['end-wrapper']}>
             <label htmlFor="end-time">end:</label>
             <input
-              onChange={handleEndTimeChange}
+              onChange={e =>
+                shouldRepeat && shouldUpdateSeries ? handleRepeatingEndTimeChange(e) : handleEndTimeChange(e)
+              }
               type="time"
               id="end-time"
               name="end-time"
@@ -282,10 +307,6 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
             />
           </div>
           <div className={style['repeating-wrapper']}>
-            {/* TODO: lamda: only return day from next and prev month */}
-
-            {/* TODO: look into timezone aws lambda */}
-            {/* TODO: when creating free timeslot check if other timeslot is during that time */}
             {shouldUpdateSeries && (
               <>
                 <label htmlFor="repeating">repeats:</label>
@@ -306,17 +327,17 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
             {shouldRepeat && shouldUpdateSeries && (
               <>
                 <div className={style['repeating-days-wrapper']}>
-                  <label htmlFor="days">On</label>
+                  <label htmlFor="days">On:</label>
                   <div className={style['days']} id="days">
                     {currentWeekDays.map((day: Dayjs) => {
-                      const dayInWeek = day.weekday();
-                      const isSelected = repeatingDays.includes(dayInWeek);
+                      const dayDiffToStart = day.weekday() - dayjs(repeatingStartDate).weekday();
+                      const isSelected = repeatingDays.includes(dayDiffToStart);
 
                       return (
                         <span
                           key={day.format()}
                           className={`${style['day']} ${isSelected ? style['selected'] : null} pointer`}
-                          onClick={() => handleRepeatingDayClick(dayInWeek)}
+                          onClick={() => handleRepeatingDayClick(dayDiffToStart)}
                         >
                           {day.format('dd')}
                         </span>
@@ -331,6 +352,7 @@ const CalendarTimeslotModal = ({ timeslot, closeModal, isNew, currentWeekDays }:
                     name="until-date"
                     id="until-date"
                     min={dayjs(currentTimeslot.repeatingStartDate).add(1, 'day').format('YYYY-MM-DD')}
+                    max={dayjs().add(2, 'year').format('YYYY-MM-DD')}
                     value={dayjs(repeatingUntilDate).format('YYYY-MM-DD')}
                     onChange={handleRepeatingUntilDateChange}
                   />

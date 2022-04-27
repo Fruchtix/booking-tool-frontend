@@ -10,7 +10,7 @@ import Appointment from '../../interfaces/Appointment';
 import CalendarAppointmentModal from '../CalendarAppointmentModal/CalendarAppointmentModal';
 import CalendarTimeslotModal from '../CalendarTimeslotModal/CalendarTimeslotModal';
 import Timeslot from '../../interfaces/Timeslot';
-import { useTimeslots } from '../../context/TimeslotContext';
+// import { useTimeslots } from '../../context/TimeslotContext';
 
 dayjs.locale({
   ...de,
@@ -28,7 +28,7 @@ const Calendar = () => {
   const [hideTimeslots, setHideTimeslots] = useState(false);
   const [isNewTimeslot, setIsNewTimeslot] = useState(false);
 
-  const { checkForNewTimeslots } = useTimeslots();
+  // const { checkForNewTimeslots } = useTimeslots();
 
   useEffect(() => {
     const currentWeekStart = currentDate.startOf('week');
@@ -36,8 +36,9 @@ const Calendar = () => {
 
     setCurrentWeekDays(daysInWeek);
 
-    checkForNewTimeslots(currentWeekStart);
-  }, [currentDate, checkForNewTimeslots]);
+    // TODO - later: after aws lambda return correct date
+    // checkForNewTimeslots(currentWeekStart);
+  }, [currentDate]);
 
   const handlePrevClick = () => {
     setCurrentDate(currentDate => currentDate.subtract(7, 'day'));
