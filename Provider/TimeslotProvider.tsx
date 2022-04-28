@@ -1,6 +1,6 @@
 import axios from 'axios';
 import dayjs, { Dayjs } from 'dayjs';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TimeslotContext from '../context/TimeslotContext';
 import Timeslot from '../interfaces/Timeslot';
 
@@ -12,9 +12,14 @@ type Props = {
 };
 
 export const TimeslotProvider = ({ fetchedTimeslots, timeslotRangeStart, timeslotRangeEnd, children }: Props) => {
-  const [timeslots, setTimeslots] = useState<Array<Timeslot>>([...fetchedTimeslots]);
+  const [timeslotsArray, setTimeslotsArray] = useState<Array<Timeslot>>([...fetchedTimeslots]);
+  const [timeslots, setTimeslot] = useState<Set<Timeslot>>(new Set([...fetchedTimeslots]));
   const [currentTimeslotRangeStart, setCurrentTimeslotRangeStart] = useState(timeslotRangeStart);
   const [currentTimeslotRangeEnd, setCurrentTimeslotRangeEnd] = useState(timeslotRangeEnd);
+
+  useEffect(() => {
+    setTimeslot(new Set([...timeslotsArray]));
+  }, [timeslotsArray]);
 
   const updateTimeslot = async (timeslot: Timeslot, updateSeries: boolean) => {
     return new Promise(async (resolve, reject) => {
@@ -25,7 +30,7 @@ export const TimeslotProvider = ({ fetchedTimeslots, timeslotRangeStart, timeslo
           updateSeries: updateSeries,
         })
         .then(res => {
-          setTimeslots(currentTimeslots => [
+          setTimeslotsArray(currentTimeslots => [
             ...currentTimeslots.filter(slot => slot.timeslotID !== timeslot.timeslotID),
             ...res.data,
           ]);
@@ -44,7 +49,9 @@ export const TimeslotProvider = ({ fetchedTimeslots, timeslotRangeStart, timeslo
           timeslot: timeslot,
         })
         .then(() => {
-          setTimeslots(currentTimeslots => currentTimeslots.filter(slot => slot.timeslotID !== timeslot.timeslotID));
+          setTimeslotsArray(currentTimeslots =>
+            currentTimeslots.filter(slot => slot.timeslotID !== timeslot.timeslotID)
+          );
           resolve(true);
         })
         .catch(error => {
@@ -60,7 +67,7 @@ export const TimeslotProvider = ({ fetchedTimeslots, timeslotRangeStart, timeslo
           timeslot: timeslot,
         })
         .then(() => {
-          setTimeslots(currentTimeslots => currentTimeslots.filter(slot => slot.seriesID !== timeslot.seriesID));
+          setTimeslotsArray(currentTimeslots => currentTimeslots.filter(slot => slot.seriesID !== timeslot.seriesID));
           resolve(true);
         })
         .catch(error => {
@@ -98,8 +105,6 @@ export const TimeslotProvider = ({ fetchedTimeslots, timeslotRangeStart, timeslo
   };
 
   const getTimeslots = async (start: string, end: string) => {
-    console.log('load timeslots');
-
     return new Promise(async (resolve, reject) => {
       await axios
         .get('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/timeslots/get', {
@@ -110,7 +115,7 @@ export const TimeslotProvider = ({ fetchedTimeslots, timeslotRangeStart, timeslo
           },
         })
         .then(res => {
-          setTimeslots(currentTimeslots => [...currentTimeslots, ...res.data]);
+          setTimeslotsArray(currentTimeslots => [...currentTimeslots, ...res.data]);
           resolve(true);
         })
         .catch(error => {
@@ -121,7 +126,7 @@ export const TimeslotProvider = ({ fetchedTimeslots, timeslotRangeStart, timeslo
   };
 
   const value = {
-    timeslots,
+    timeslots: Array.from(timeslots),
     updateTimeslot,
     deleteTimeslot,
     deleteTimeslotSeries,

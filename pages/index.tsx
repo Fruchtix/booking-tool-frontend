@@ -7,6 +7,8 @@ import Link from 'next/link';
 const Home: NextPage = () => {
   const { data: session } = useSession();
 
+  console.log(session);
+
   return (
     <div>
       <Head>

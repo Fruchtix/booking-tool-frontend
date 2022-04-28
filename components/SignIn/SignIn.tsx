@@ -16,7 +16,7 @@ const SignIn = () => {
   return (
     <div>
       <h2>Not signed in</h2>
-      <button onClick={() => signIn('cognito')}>Sign in</button>
+      <button onClick={() => signIn()}>Sign in</button>
     </div>
   );
 };

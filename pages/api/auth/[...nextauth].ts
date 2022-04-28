@@ -1,12 +1,37 @@
+import { DynamoDB, DynamoDBClientConfig } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
 import NextAuth from 'next-auth';
-import CognitoProvider from 'next-auth/providers/cognito';
+import EmailProvider from 'next-auth/providers/email';
+import { DynamoDBAdapter } from '@next-auth/dynamodb-adapter';
+
+const config: DynamoDBClientConfig = {
+  credentials: {
+    accessKeyId: process.env.NEXT_AUTH_AWS_ACCESS_KEY as string,
+    secretAccessKey: process.env.NEXT_AUTH_AWS_SECRET_KEY as string,
+  },
+  region: process.env.NEXT_AUTH_AWS_REGION,
+};
+
+const client = DynamoDBDocument.from(new DynamoDB(config), {
+  marshallOptions: {
+    convertEmptyValues: true,
+    removeUndefinedValues: true,
+    convertClassInstanceToMap: true,
+  },
+});
 
 export default NextAuth({
   providers: [
-    CognitoProvider({
-      clientId: process.env.COGNITO_CLIENT_ID || '',
-      clientSecret: process.env.COGNITO_CLIENT_SECRET || '',
-      issuer: process.env.COGNITO_ISSUER,
+    EmailProvider({
+      server: process.env.EMAIL_SERVER,
+      from: process.env.EMAIL_FROM,
     }),
   ],
+  adapter: DynamoDBAdapter(client),
+  callbacks: {
+    async session({ session, user }) {
+      session.studioID = user.id;
+      return session;
+    },
+  },
 });
