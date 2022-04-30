@@ -1,0 +1,9 @@
+.row {
+  display: flex;
+  gap: 5px;
+}
+
+.removeBtn {
+  font-size: large;
+  cursor: pointer;
+}

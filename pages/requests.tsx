@@ -1,6 +1,11 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Layout from '../components/Layout/Layout';
 
+// TODO: think about => should the studioID logic be replaced by tattooerID => yes
+
+// TODO: get bookings with status untouched from aws call
+// TODO: implement aws lambda getRequest (passing studioID/tattooerID)
+
 interface Props {
   message: string;
 }
