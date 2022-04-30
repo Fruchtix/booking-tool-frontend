@@ -16,7 +16,15 @@ const SignIn = () => {
   return (
     <div>
       <h2>Not signed in</h2>
-      <button onClick={() => signIn()}>Sign in</button>
+      <button
+        onClick={() =>
+          signIn('email', {
+            email: 'jan@fuechtener.eu',
+          })
+        }
+      >
+        Sign in
+      </button>
     </div>
   );
 };

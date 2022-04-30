@@ -27,11 +27,22 @@ export default NextAuth({
       from: process.env.EMAIL_FROM,
     }),
   ],
+  pages: {
+    // signIn: '/signin',
+    // signOut: '/auth/signout',
+    // error: '/auth/error', // Error code passed in query string as ?error=
+    verifyRequest: '/auth/check-your-mail', // (used for check email message)
+    newUser: '/auth/new', // New users will be directed here on first sign in (leave the property out if not of interest)
+  },
   adapter: DynamoDBAdapter(client),
   callbacks: {
     async session({ session, user }) {
       session.studioID = user.id;
       return session;
     },
+  },
+  theme: {
+    colorScheme: 'light',
+    brandColor: 'black',
   },
 });
