@@ -4,18 +4,23 @@ import { useState } from 'react';
 import style from './CreateBookingUrl.module.css';
 import Router from 'next/router';
 
-const CreateBookingUrl = () => {
-  const [studioUrl, setStudioUrl] = useState('');
+interface Props {
+  currentUrl: string;
+}
+
+const CreateBookingUrl = ({ currentUrl }: Props) => {
+  const [studioUrl, setStudioUrl] = useState(currentUrl ?? '');
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const { data: session } = useSession();
 
   const handleSubmit = async () => {
     setIsLoading(true);
+    setIsError(false);
 
     const alreadyExists = await checkIfUrlIsAlreadyTaken();
 
-    if (alreadyExists) {
+    if (alreadyExists.length && alreadyExists[0].studioID !== session?.studioID) {
       setIsLoading(false);
       setIsError(true);
       return;
@@ -29,7 +34,9 @@ const CreateBookingUrl = () => {
     axios
       .post('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/studio/update', studioData)
       .then(() => {
-        Router.replace('/dashboard');
+        // Router.replace('/dashboard');
+        console.log('done');
+        setIsLoading(false);
       })
       .catch(error => {
         console.log(error);
@@ -40,7 +47,7 @@ const CreateBookingUrl = () => {
 
   const checkIfUrlIsAlreadyTaken = async () => {
     return await axios
-      .get('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/studio/get', {
+      .get('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/studio/by-url/get', {
         params: {
           studioUrl: studioUrl,
         },
@@ -66,12 +73,13 @@ const CreateBookingUrl = () => {
           name="studioName"
           id="studioName"
           value={studioUrl}
+          required
           onFocus={() => setIsError(false)}
           onChange={e => setStudioUrl(e.target.value)}
         />
       </div>
       <input type="button" value="submit" onClick={handleSubmit} disabled={studioUrl === ''} />
-      {isError && <div>Url already taken...</div>}
+      {isError && <div>Error: Url already taken...</div>}
     </>
   );
 };

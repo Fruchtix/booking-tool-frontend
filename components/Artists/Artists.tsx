@@ -1,41 +1,32 @@
 import style from './Artists.module.css';
-import React, { ReactFragment, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Tattooer from '../../interfaces/Tattooer';
 import { v4 as uuidv4 } from 'uuid';
-import { useSession } from 'next-auth/react';
 import axios from 'axios';
+import Studio from '../../interfaces/Studio';
 
-const Artists = () => {
-  const [tattooer, setTattooer] = useState<Tattooer[]>([
-    {
-      tattooerID: '',
-      studioID: '',
-      email: '',
-      name: '',
-    },
-  ]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(false);
+interface Props {
+  studioData: Studio;
+}
 
-  const { data: session } = useSession();
-
-  useEffect(() => {
-    setTattooer([
+const Artists = ({ studioData }: Props) => {
+  const [tattooer, setTattooer] = useState<Tattooer[]>(
+    studioData.tattooer ?? [
       {
         tattooerID: uuidv4(),
-        studioID: String(session?.studioID),
         email: 'todo',
         name: '',
       },
-    ]);
-  }, [session?.studioID]);
+    ]
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleAdd = () => {
     setTattooer(current => [
       ...current,
       {
         tattooerID: uuidv4(),
-        studioID: String(session?.studioID),
         email: 'todo',
         name: '',
       },
@@ -43,6 +34,7 @@ const Artists = () => {
   };
 
   const handleRemove = (tattooerID: string) => {
+    // TODO: open confirm modal
     setTattooer(current => current.filter(tattooer => tattooer.tattooerID !== tattooerID));
   };
 
@@ -51,14 +43,13 @@ const Artists = () => {
     setError(false);
     setIsLoading(true);
 
-    // TODO: delete old ones first
-    // TODO: limit to 25
-    // TODO: display success message or redirect
-
     axios
-      .post('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/tattooer/add', tattooer)
+      .post('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/studio/update', {
+        ...studioData,
+        tattooer: tattooer,
+      })
       .then(() => {
-        console.log('added');
+        console.log('done');
         setIsLoading(false);
       })
       .catch(error => {
@@ -95,7 +86,7 @@ const Artists = () => {
                 onChange={e => handleArtistNameChange(e, tattooer.tattooerID)}
                 placeholder="Artist name"
               />
-              <div className={style['removeBtn']} onClick={e => handleRemove(tattooer.tattooerID)}>
+              <div className={style['removeBtn']} onClick={() => handleRemove(tattooer.tattooerID)}>
                 x
               </div>
             </div>

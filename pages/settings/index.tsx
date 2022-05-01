@@ -1,5 +1,6 @@
 import { GetServerSideProps, NextPage } from 'next';
-import Layout from '../components/Layout/Layout';
+import Link from 'next/link';
+import Layout from '../../components/Layout/Layout';
 
 interface Props {
   message: string;
@@ -11,6 +12,13 @@ const Settings: NextPage<Props> = props => {
   return (
     <Layout>
       <div>Settings {message}</div>
+
+      <div>
+        <Link href="/settings/url">your url</Link>
+      </div>
+      <div>
+        <Link href="/settings/artists">your artists</Link>
+      </div>
     </Layout>
   );
 };

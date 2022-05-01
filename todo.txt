@@ -1,7 +1,20 @@
 IDEAS:
 
+- tattooer table vs inlcude tattooer inside studio table
+
+TODO: to think about: does the user need an account? for the chat
+       => first thoughts:
+           - yes to connect the chat with a specific user (including email adress
+           - but only with email => dont use password for it
+           - send token to mail each time a chat is send => user does not need to login
+TODO: does the user need to verify the email? => yes, user needs to confirm once!
+
 
 TODO:
 
 - when creating free timeslot check if other timeslot is during that time
 - maybe move confirm modal into original modal and don't have two modals open
+
+
+- get studio url
+- get studio artists

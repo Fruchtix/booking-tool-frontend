@@ -3,16 +3,6 @@ import { GetServerSideProps, NextPage } from 'next';
 import Router from 'next/router';
 import { useState } from 'react';
 
-// TODO: create GSD for studio table to query by id
-
-// TODO: to think about: does the user need an account? for the chat
-//        => first thoughts:
-//            - yes to connect the chat with a specific user (including email adress
-//            - but only with email => dont use password for it
-//            - send token to mail each time a chat is send => user does not need to login
-//
-// TODO: does the user need to verify the email? => yes, user needs to confirm once!
-
 interface Props {
   url: string;
   studioData: any;
@@ -77,7 +67,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
   const { booking } = context.query;
 
   const studioData = await axios
-    .get('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/studio/get', {
+    .get('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/studio/by-url/get', {
       params: {
         studioUrl: booking,
       },
