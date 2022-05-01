@@ -14,7 +14,3 @@ TODO:
 
 - when creating free timeslot check if other timeslot is during that time
 - maybe move confirm modal into original modal and don't have two modals open
-
-
-- get studio url
-- get studio artists

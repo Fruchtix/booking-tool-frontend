@@ -8,6 +8,8 @@ interface Props {
   onHideTimeslotsClick: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+// TODO: add select for tattooer and only load data for tattooer
+
 const CalendarControls = ({ currentWeekDays, onPrevClick, onNextClick, onTodayClick, onHideTimeslotsClick }: Props) => {
   return (
     <div className={style['control-bar']}>

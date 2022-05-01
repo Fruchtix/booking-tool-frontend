@@ -20,6 +20,7 @@ const BookingPage: NextPage<Props> = props => {
     setError(false);
     setIsLoading(true);
 
+    //TODO: add tattooerID - make introduce select field inside form to select artist
     const bookingDetails = {
       studioID: studioData.studioID,
       userName: userName,
