@@ -8,6 +8,7 @@ import CalendarAppointmentEntries from '../CalendarAppointmentEntries/CalendarAp
 import { useTimeslots } from '../../context/TimeslotContext';
 import { useAppointments } from '../../context/AppointmentContext';
 import CalendarTimeslotEntries from '../CalendarTimeslotEntries.tsx/CalendarTimeslotEntries';
+import { useStudio } from '../../context/StudioContext';
 
 interface Props {
   currentWeekDays: Array<Dayjs>;
@@ -22,6 +23,8 @@ const CalendarWeekView = ({ currentWeekDays, openAppointmentDetails, openTimeslo
   const { appointments } = useAppointments();
   const slots = Array.from({ length: 24 }, (x, i) => i);
   const contentBody = useRef<HTMLDivElement>(null);
+
+  const { studioData, selectedTattooer } = useStudio();
 
   useEffect(() => {
     const contentHeight = contentBody.current?.offsetHeight || 0;
@@ -41,8 +44,8 @@ const CalendarWeekView = ({ currentWeekDays, openAppointmentDetails, openTimeslo
 
     const newTimeslot: Timeslot = {
       timeslotID: uuidv4(),
-      tattooerID: 'todo',
-      studioID: 'todo',
+      tattooerID: selectedTattooer.tattooerID,
+      studioID: studioData?.studioID,
       start: timeslotStart,
       end: timeslotEnd,
     };

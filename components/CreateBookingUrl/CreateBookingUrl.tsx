@@ -3,6 +3,7 @@ import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import style from './CreateBookingUrl.module.css';
 import Router from 'next/router';
+import { useStudio } from '../../context/StudioContext';
 
 interface Props {
   currentUrl: string;
@@ -13,6 +14,7 @@ const CreateBookingUrl = ({ currentUrl }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const { data: session } = useSession();
+  const { studioData } = useStudio();
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -26,16 +28,15 @@ const CreateBookingUrl = ({ currentUrl }: Props) => {
       return;
     }
 
-    const studioData = {
-      studioID: session?.studioID,
+    const studio = {
+      ...studioData,
       studioUrl: studioUrl,
     };
 
     axios
-      .post('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/studio/update', studioData)
+      .post('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/studio/update', studio)
       .then(() => {
         // Router.replace('/dashboard');
-        console.log('done');
         setIsLoading(false);
       })
       .catch(error => {

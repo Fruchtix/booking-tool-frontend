@@ -1,6 +1,7 @@
 import axios from 'axios';
 import dayjs, { Dayjs } from 'dayjs';
 import { useState, useEffect } from 'react';
+import { useStudio } from '../context/StudioContext';
 import TimeslotContext from '../context/TimeslotContext';
 import Timeslot from '../interfaces/Timeslot';
 
@@ -16,6 +17,8 @@ export const TimeslotProvider = ({ fetchedTimeslots, timeslotRangeStart, timeslo
   const [timeslots, setTimeslot] = useState<Set<Timeslot>>(new Set([...fetchedTimeslots]));
   const [currentTimeslotRangeStart, setCurrentTimeslotRangeStart] = useState(timeslotRangeStart);
   const [currentTimeslotRangeEnd, setCurrentTimeslotRangeEnd] = useState(timeslotRangeEnd);
+
+  const { studioData } = useStudio();
 
   useEffect(() => {
     setTimeslot(new Set([...timeslotsArray]));
@@ -109,7 +112,7 @@ export const TimeslotProvider = ({ fetchedTimeslots, timeslotRangeStart, timeslo
       await axios
         .get('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/timeslots/get', {
           params: {
-            studioID: 'todo',
+            studioID: studioData?.studioID,
             rangeStartDate: start,
             rangeEndDate: end,
           },

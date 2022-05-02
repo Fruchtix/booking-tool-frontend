@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import React from 'react';
+import { useStudio } from '../../context/StudioContext';
 import Timeslot from '../../interfaces/Timeslot';
 import style from './CalendarTimeslotEntries.module.css';
 
@@ -13,6 +14,8 @@ const CalendarTimeslotEntries = ({ entries, handleDoubleClick, currentWeekDays }
   const firstDayOfNextWeek = currentWeekDays[currentWeekDays.length - 1].clone().add(1, 'day');
   const lastDayOfLastWeek = currentWeekDays[0].clone().subtract(1, 'day');
 
+  const { selectedTattooer } = useStudio();
+
   return (
     <div className={style['entries']}>
       {entries.map(entry => {
@@ -21,8 +24,9 @@ const CalendarTimeslotEntries = ({ entries, handleDoubleClick, currentWeekDays }
         const isBefore = startDate.isBefore(firstDayOfNextWeek, 'day');
         const isAfter = startDate.isAfter(lastDayOfLastWeek, 'day');
         const entryIsInCurrentWeek = isBefore && isAfter;
+        const isSelectedTattooerTimeslot = selectedTattooer.tattooerID === entry.tattooerID;
 
-        if (!entryIsInCurrentWeek) {
+        if (!entryIsInCurrentWeek || !isSelectedTattooerTimeslot) {
           return null;
         }
 

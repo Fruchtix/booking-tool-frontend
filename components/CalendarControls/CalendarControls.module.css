@@ -6,15 +6,12 @@
 .left,
 .right {
   display: flex;
+  align-items: center;
 }
 
 .left > div,
 .right > div {
   margin: var(--space-md);
-}
-
-.right {
-  align-items: center;
 }
 
 .next-prev-btns {

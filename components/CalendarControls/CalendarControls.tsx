@@ -1,3 +1,5 @@
+import React from 'react';
+import { useStudio } from '../../context/StudioContext';
 import style from './CalendarControls.module.css';
 
 interface Props {
@@ -8,9 +10,15 @@ interface Props {
   onHideTimeslotsClick: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-// TODO: add select for tattooer and only load data for tattooer
-
 const CalendarControls = ({ currentWeekDays, onPrevClick, onNextClick, onTodayClick, onHideTimeslotsClick }: Props) => {
+  const { studioData, selectedTattooer, setSelectedTattooer } = useStudio();
+
+  const handleTattooerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSelectedArtist = studioData.tattooer[e.target.selectedIndex];
+
+    setSelectedTattooer(newSelectedArtist);
+  };
+
   return (
     <div className={style['control-bar']}>
       <div className={style['left']}>
@@ -28,6 +36,14 @@ const CalendarControls = ({ currentWeekDays, onPrevClick, onNextClick, onTodayCl
         <div className={style['']}>{`${currentWeekDays[0]?.format('DD MMMM')} - ${currentWeekDays[6]?.format(
           'DD MMMM YYYY'
         )}`}</div>
+
+        <select onChange={handleTattooerChange} value={selectedTattooer.tattooerID} name="tattooer" id="tattooer">
+          {studioData?.tattooer?.map(tattooer => (
+            <option key={tattooer.tattooerID} value={tattooer.tattooerID}>
+              {tattooer.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className={style['right']}>

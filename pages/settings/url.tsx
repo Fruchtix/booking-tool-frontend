@@ -4,6 +4,7 @@ import { getSession } from 'next-auth/react';
 import CreateBookingUrl from '../../components/CreateBookingUrl/CreateBookingUrl';
 import Layout from '../../components/Layout/Layout';
 import Studio from '../../interfaces/Studio';
+import { StudioProvider } from '../../Provider/StudioProvider';
 
 interface Props {
   studioData: Studio;
@@ -14,10 +15,12 @@ const Url: NextPage<Props> = props => {
 
   return (
     <Layout>
-      <h1>Getting started</h1>
-      <h2>Please fill this shit out</h2>
+      <StudioProvider studioData={studioData}>
+        <h1>Getting started</h1>
+        <h2>Please fill this shit out</h2>
 
-      <CreateBookingUrl currentUrl={studioData?.studioUrl} />
+        <CreateBookingUrl currentUrl={studioData?.studioUrl} />
+      </StudioProvider>
     </Layout>
   );
 };

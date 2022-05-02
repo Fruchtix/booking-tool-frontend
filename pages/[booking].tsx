@@ -80,7 +80,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
       console.log(error);
     });
 
-  if (!studioData) {
+  if (studioData.length === 0) {
     return {
       redirect: {
         destination: '/',
