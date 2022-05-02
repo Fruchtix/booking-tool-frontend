@@ -36,6 +36,8 @@ const Calendar = () => {
 
     setCurrentWeekDays(daysInWeek);
 
+    // TODO: load only data for next 5 weeks - think about loading it depending on the tattooer
+    // TODO: save currentTattooer into localstorage
     // TODO - later: after aws lambda return correct date
     // checkForNewTimeslots(currentWeekStart);
   }, [currentDate]);
