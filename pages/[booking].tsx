@@ -2,6 +2,7 @@ import axios from 'axios';
 import { GetServerSideProps, NextPage } from 'next';
 import Router from 'next/router';
 import { useState } from 'react';
+import Tattooer from '../interfaces/Tattooer';
 
 interface Props {
   url: string;
@@ -11,6 +12,7 @@ interface Props {
 const BookingPage: NextPage<Props> = props => {
   const { url, studioData } = props;
 
+  const [selectedArtist, setSelectedArtist] = useState('');
   const [userName, setUserName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -20,10 +22,16 @@ const BookingPage: NextPage<Props> = props => {
     setError(false);
     setIsLoading(true);
 
-    //TODO: add tattooerID - make introduce select field inside form to select artist
+    if (selectedArtist === '') {
+      setError(true);
+      setIsLoading(false);
+      return;
+    }
+
     const bookingDetails = {
-      studioID: studioData.studioID,
+      studioID: studioData[0].studioID,
       userName: userName,
+      tattooerID: selectedArtist,
     };
 
     axios
@@ -44,6 +52,18 @@ const BookingPage: NextPage<Props> = props => {
       <h2>Fill this out and maybe you are lucky to spend way to much money on useless ink</h2>
 
       <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="artist">Artist:</label>
+          <select name="artist" id="artist" value={selectedArtist} onChange={e => setSelectedArtist(e.target.value)}>
+            <option value="">Please select</option>
+            {studioData[0].tattooer?.map((artist: Tattooer) => (
+              <option value={artist.tattooerID} key={artist.tattooerID}>
+                {artist.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div>
           <label htmlFor="userName">Name:</label>
           <input
