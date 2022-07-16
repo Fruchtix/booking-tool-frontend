@@ -13,6 +13,9 @@ const Sidebar = () => {
             <Link href="/calendar">Calendar</Link>
           </li>
           <li>
+            <Link href="/chats">Chats</Link>
+          </li>
+          <li>
             <Link href="/requests">requests</Link>
           </li>
         </div>

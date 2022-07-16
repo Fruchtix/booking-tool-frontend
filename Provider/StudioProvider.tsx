@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
+import * as cookie from 'cookie';
 import StudioContext from '../context/StudioContext';
 import Studio from '../interfaces/Studio';
 import Tattooer from '../interfaces/Tattooer';
@@ -9,17 +10,22 @@ type Props = {
 };
 
 export const StudioProvider = ({ studioData, children }: Props) => {
-  const [selectedTattooer, setSelectedTattooerInteral] = useState(studioData?.tattooer[0]);
+  const [selectedTattooer, setSelectedTattooerInteral] = useState<Tattooer>({
+    tattooerID: '',
+    email: '',
+    name: '',
+  });
 
   const setSelectedTattooer = (tattooer: Tattooer) => {
     setSelectedTattooerInteral(tattooer);
-    localStorage.setItem('selectedTattooer', JSON.stringify(tattooer));
+    document.cookie = `selectedTattooer=${JSON.stringify(tattooer)}; expires=Thu, 18 Dec 2100 12:00:00 UTC; path=/`;
   };
 
   useEffect(() => {
-    setSelectedTattooerInteral(
-      (JSON.parse(String(localStorage.getItem('selectedTattooer'))) as Tattooer) ?? studioData?.tattooer[0]
-    );
+    const parsedCookies = cookie.parse(document.cookie);
+    const selectedTatooer = parsedCookies?.selectedTattooer ? JSON.parse(parsedCookies.selectedTattooer) : null;
+
+    setSelectedTattooerInteral((selectedTatooer as Tattooer) ?? studioData?.tattooer[0]);
   }, [studioData?.tattooer]);
 
   const value = {
