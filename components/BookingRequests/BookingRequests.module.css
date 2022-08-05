@@ -1,0 +1,49 @@
+.container {
+  display: flex;
+}
+
+.chat {
+  height: 50px;
+  background-color: white;
+  width: 200px;
+}
+
+.activeChat {
+  background-color: rgb(184, 183, 183);
+}
+
+.chatSection {
+  flex: 1;
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.bookings {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.bookingList {
+  height: 100vh;
+  overflow: auto;
+}
+
+.inputSection {
+  display: flex;
+  margin-top: 20px;
+  border: 1px solid grey;
+  border-radius: 12px;
+  padding: 5px;
+  background-color: white;
+  width: 100%;
+}
+
+.inputSection input {
+  border: none;
+  flex: 1;
+}
+
+.messageContainer {
+  flex: 1;
+}

@@ -18,14 +18,15 @@ interface Props {
 const Request: NextPage<Props> = props => {
   const { studioData, bookings, currentTattooerID } = props;
 
+  console.log(studioData);
+  console.log(bookings);
+  console.log(currentTattooerID);
+
   // TODO: limit results and lazy load others
 
   return (
     <Layout>
       <StudioProvider studioData={studioData}>
-        <RequestControls />
-        <h1>Request page</h1>
-
         <BookingRequests bookings={bookings} tattooerID={currentTattooerID} />
       </StudioProvider>
     </Layout>
