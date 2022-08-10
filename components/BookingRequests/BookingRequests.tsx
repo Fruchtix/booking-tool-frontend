@@ -14,12 +14,18 @@ const BookingRequests = ({ bookings, tattooerID }: Props) => {
   const { selectedTattooer } = useStudio();
   const [bookingData, setBookingData] = useState(bookings);
   const [currentTattooerID, setCurrentTattooerID] = useState(tattooerID);
-  const [selectedBooking, setSelectedBooking] = useState<Booking>();
+  const [selectedBooking, setSelectedBooking] = useState<number>(-1);
   const [currentInputText, setCurrentInputText] = useState('');
 
   useEffect(() => {
     setCurrentInputText('');
   }, [selectedBooking, selectedTattooer, currentTattooerID]);
+
+  useEffect(() => {
+    console.log('change detected');
+
+    console.log(bookingData);
+  }, [bookingData]);
 
   useEffect(() => {
     const getBookingData = async () => {
@@ -43,8 +49,33 @@ const BookingRequests = ({ bookings, tattooerID }: Props) => {
       setCurrentTattooerID(selectedTattooer.tattooerID);
     }
 
-    setSelectedBooking(undefined);
+    setSelectedBooking(-1);
   }, [selectedTattooer, currentTattooerID]);
+
+  const handleMessageSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const bookingWithNewMessage = {
+      ...bookingData[selectedBooking],
+      messages: [...(bookingData[selectedBooking].messages || []), { content: currentInputText, sender: 'artist' }],
+    };
+
+    const newBookingData = bookingData;
+    newBookingData[selectedBooking] = bookingWithNewMessage;
+
+    setBookingData(newBookingData);
+    setCurrentInputText('');
+
+    axios
+      .post('https://dgumvqieoi.execute-api.eu-central-1.amazonaws.com/dev/bookings/update', bookingWithNewMessage)
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  const openImageSelect = () => {
+    console.log('open image select');
+  };
 
   return (
     <div className={style.container}>
@@ -52,11 +83,13 @@ const BookingRequests = ({ bookings, tattooerID }: Props) => {
         <RequestControls />
 
         <div className={style.bookingList}>
-          {bookingData.map(booking => (
+          {bookingData.map((booking, index) => (
             <div
-              className={`${style.chat} ${selectedBooking?.bookingID === booking.bookingID ? style.activeChat : ''}`}
+              className={`${style.chat} ${
+                bookingData[selectedBooking]?.bookingID === booking.bookingID ? style.activeChat : ''
+              }`}
               key={booking.bookingID}
-              onClick={() => setSelectedBooking(booking)}
+              onClick={() => setSelectedBooking(index)}
             >
               <div>{booking.userName}</div>
             </div>
@@ -64,14 +97,18 @@ const BookingRequests = ({ bookings, tattooerID }: Props) => {
         </div>
       </div>
 
-      {selectedBooking ? (
+      {selectedBooking !== -1 ? (
         <div className={style.chatSection}>
-          <div>Chat of {selectedBooking?.email}</div>
-          <div className={style.messageContainer}></div>
+          <div>Chat of {bookingData[selectedBooking]?.email}</div>
+          <div className={style.messageContainer}>
+            {bookingData[selectedBooking].messages?.map((message, index) => {
+              return <div key={index}>{message.content}</div>;
+            })}
+          </div>
 
           <div>Accept Decline</div>
 
-          <div className={style.inputSection}>
+          <form className={style.inputSection} onSubmit={handleMessageSubmit}>
             <div>☺</div>
             <input
               type="text"
@@ -81,8 +118,10 @@ const BookingRequests = ({ bookings, tattooerID }: Props) => {
               value={currentInputText}
               onChange={e => setCurrentInputText(e.target.value)}
             />
-            <div>{currentInputText === '' ? 'Image' : 'Send'}</div>
-          </div>
+            <div onClick={currentInputText === '' ? openImageSelect : handleMessageSubmit}>
+              {currentInputText === '' ? 'Image' : 'Send'}
+            </div>
+          </form>
         </div>
       ) : null}
     </div>
